@@ -1,0 +1,156 @@
+
+package: GLURaw-2.0.0.4
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+flags: usenativewindowslibraries
+dependencies: transformers-0.4.2.0 base-4.8.2.0 OpenGLRaw-3.3.0.1
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: GLUT-2.7.0.13
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+flags: usenativewindowslibraries -buildexamples
+dependencies: transformers-0.4.2.0 random-1.1 containers-0.5.6.2
+              bytestring-0.10.6.0 base-4.8.2.0 array-0.5.1.0 StateVar-1.1.1.0
+              OpenGLRaw-3.3.0.1 OpenGL-3.0.2.1
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: ObjectName-1.1.0.1
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+dependencies: transformers-0.4.2.0 base-4.8.2.0
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: OpenGL-3.0.2.1
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+dependencies: transformers-0.4.2.0 text-1.2.3.0 containers-0.5.6.2
+              bytestring-0.10.6.0 base-4.8.2.0 StateVar-1.1.1.0 OpenGLRaw-3.3.0.1
+              ObjectName-1.1.0.1 GLURaw-2.0.0.4
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: OpenGLRaw-3.3.0.1
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+flags: usenativewindowslibraries useglxgetprocaddress usegles2
+       -osandroid
+dependencies: transformers-0.4.2.0 text-1.2.3.0 half-0.3
+              fixed-0.2.1.1 containers-0.5.6.2 bytestring-0.10.6.0 base-4.8.2.0
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: StateVar-1.1.1.0
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+dependencies: transformers-0.4.2.0 stm-2.4.5.0 base-4.8.2.0
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: bmp-1.2.6.3
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+dependencies: bytestring-0.10.6.0 binary-0.7.5.0 base-4.8.2.0
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: fixed-0.2.1.1
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.8.2.0
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: gloss-1.12.0.0
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+flags: glut -glfw -explicitbackend
+dependencies: gloss-rendering-1.12.0.0 ghc-prim-0.4.0.0
+              containers-0.5.6.2 bytestring-0.10.6.0 bmp-1.2.6.3 base-4.8.2.0
+              OpenGL-3.0.2.1 GLUT-2.7.0.13
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: gloss-rendering-1.12.0.0
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+dependencies: containers-0.5.6.2 bytestring-0.10.6.0 bmp-1.2.6.3
+              base-4.8.2.0 OpenGL-3.0.2.1 GLUT-2.7.0.13
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: half-0.3
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+dependencies: template-haskell-2.10.0.0 deepseq-1.4.1.1
+              base-4.8.2.0
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: random-1.1
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+dependencies: time-1.5.0.1 base-4.8.2.0
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: stm-2.4.5.0
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.8.2.0 array-0.5.1.0
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: text-1.2.3.0
+os: linux
+arch: x86_64
+compiler: ghc-7.10.3
+client: cabal-install-1.22.6.0
+flags: -integer-simple -developer -bytestring-builder
+dependencies: integer-gmp-1.0.0.0 ghc-prim-0.4.0.0 deepseq-1.4.1.1
+              bytestring-0.10.6.0 binary-0.7.5.0 base-4.8.2.0 array-0.5.1.0
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
