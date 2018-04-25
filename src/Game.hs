@@ -14,6 +14,8 @@ data Game  = Game { gameBoard :: Board,
                     gameState :: State,
                     player1Stone :: Int,
                     player2Stone :: Int,
+                    maxStone1 :: Int,
+                    maxStone2 :: Int,
                     gameList :: [[Int]],
                     checkList :: [Int]
                   } deriving(Eq, Show)
@@ -41,16 +43,16 @@ cellHeight :: Float
 cellHeight = fromIntegral screenHeight / fromIntegral n
 
 initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cycle [Empty])) // [ ((0, 0), Full Dot),
-                                                                                                  ((0, 3), Full Player1),
-                                                                                                  ((0, 6), Full Player1),
-                                                                                                  ((1, 1), Full Player2),
+                                                                                                  ((0, 3), Full Dot),
+                                                                                                  ((0, 6), Full Dot),
+                                                                                                  ((1, 1), Full Dot),
                                                                                                   ((1, 3), Full Dot),
                                                                                                   ((1, 5), Full Dot),
                                                                                                   ((2, 2), Full Dot),
                                                                                                   ((2, 3), Full Dot),
                                                                                                   ((2, 4), Full Dot),
                                                                                                   ((3, 0), Full Dot),
-                                                                                                  ((3, 1), Full Player2),
+                                                                                                  ((3, 1), Full Dot),
                                                                                                   ((3, 2), Full Dot),
                                                                                                   ((3, 4), Full Dot),
                                                                                                   ((3, 5), Full Dot),
@@ -66,8 +68,10 @@ initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cyc
                                                                                                   ((6, 6), Full Dot) ]
                      , gamePlayer = Player2
                      , gameState = Running
-                     , player1Stone = 9
-                     , player2Stone = 9
+                     , player1Stone = 0
+                     , player2Stone = 0
+                     , maxStone1 = 9
+                     , maxStone2 = 9
                      , gameList = listForCheck
                      , checkList = listForFinalCheck
                    }

@@ -31,16 +31,16 @@ isCoordCorrect (x, y) = elem (x, y) [ (0, 0),
                                       (6, 3),
                                       (6, 6) ]
 
-switchPlayer game checker 
+switchPlayer game checker
     | checker == 1 && gamePlayer game == Player1 = game { gamePlayer = Player2 }
-    | checker == 1 && gamePlayer game == Player2 = game { gamePlayer = Player1 }                   
+    | checker == 1 && gamePlayer game == Player2 = game { gamePlayer = Player1 }
     | otherwise = game
 
-switchPlayer1 game = 
+switchPlayer1 game =
     case gamePlayer game of
         Player1 -> game { gamePlayer = Player2 }
         Player2 -> game { gamePlayer = Player1 }
-    
+
 
 mousePosAsCellCoord :: (Float, Float) -> (Int, Int)
 mousePosAsCellCoord (x, y) = ( floor((y + (fromIntegral screenHeight * 0.5)) / cellHeight)
@@ -60,20 +60,40 @@ checkGameOver game
     | otherwise = game
     where board = gameBoard game
           cell  = Full Dot
-          p1    = player1Stone game
-          p2    = player2Stone game
+          p1    = maxStone1 game
+          p2    = maxStone2 game
 
 playerTurn :: Game ->(Int, Int) -> Game
 playerTurn game cellCoord
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 =
+    -- If player1Stone <= maxStone1 and chance = player1
+    -- then player1Stone++ and replace cellCoord with Full player
+    -- Else don't recognise the click (for now)
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player1 && (player1Stone game) <= (maxStone1 game) =
          checkGameOver
         $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)] }
         $ playerSwitcherConfirm
-        $ game { gameBoard = board // [(cellCoord, Full player)] }
+        $ game { gameBoard = board // [(cellCoord, Full player)], player1Stone = n1 + 1 }
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player1 && (player1Stone game) > (maxStone1 game) =
+         checkGameOver  -- Write logic for move
+        $ switchPlayer game
+        $ playerSwitcherConfirm
+        $ game
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player2 && (player2Stone game) <= (maxStone2 game) =
+         checkGameOver
+        $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)] }
+        $ playerSwitcherConfirm
+        $ game { gameBoard = board // [(cellCoord, Full player)], player2Stone = n2 + 1 }
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player1 && (player1Stone game) > (maxStone1 game) =
+         checkGameOver  -- Write logic for move
+        $ switchPlayer game
+        $ playerSwitcherConfirm
+        $ game
     | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 = switchPlayer1 $ listUnblocker $ remover game cellCoord game
     | otherwise = game
         where board = gameBoard game
               player = gamePlayer game
+              n1 = player1Stone game
+              n2 = player2Stone game
 
 transformGame (EventKey (MouseButton LeftButton) Up _ mousePos) game =
     case gameState game of
@@ -112,7 +132,7 @@ verticleLineUnblock game  [column, row, distance]      | (board!(row, column) /=
                                                                 where  board = gameBoard game
                                                                        player = Full $ gamePlayer game
 
-                                        
+
 
 
 finalHorizontalCheck game  = map (horizontalLine game) $ gameList game
@@ -139,7 +159,7 @@ unblockOther game k     | k < 8 && ((finalHorizontalCheckUnblocker game)!!n == p
                             where board = gameBoard game
                                   player = Full $ gamePlayer game
                                   validity = checkList game
-                                
+
 listUnblocker game  | (unblockOther game 0) < 8 = game { checkList = (replaceNth 1 listf $ unblockOther game 0)}
                     | otherwise = game
                         where
@@ -163,10 +183,10 @@ remover game cellCoord game1   | (takeOther game 0) < 8 = game { gameBoard = boa
 
 playerSwitcherConfirm game | (takeOther game 0) < 8 = 0
                            | otherwise = 1
-                                
+
 
 -- isTrueTakeOther | takeOther 0 (finalHorizontalCheck game)  < 9 = game {gameBoard = board // [(, Full Player2)]}
- 
+
 -- listUpdater game | elem ([] : player) (finalHorizontalCheck) =  game {gameBoard = board // [((3,2), Full Player2)]}
 --                  | elem ([] : player) (finalVerticalCheck) =  game {gameBoard = board // [((6,6), Full Player2)]}
 --                  | otherwise  = game {gameBoard = board // [((6,0), Full Player1)]}
@@ -177,8 +197,6 @@ playerSwitcherConfirm game | (takeOther game 0) < 8 = 0
 
 
 
--- transformGame (EventKey (MouseButton LeftButton) Up _ mousePos) game = 
---     case gameState game of 
+-- transformGame (EventKey (MouseButton LeftButton) Up _ mousePos) game =
+--     case gameState game of
 --         Running -> viewUpdate game
-
-
