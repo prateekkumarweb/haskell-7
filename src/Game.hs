@@ -11,7 +11,9 @@ type Board = Array (Int, Int) Cell
 
 data Game  = Game { gameBoard :: Board,
                     gamePlayer :: Player,
-                    gameState :: State,
+                    gameState :: State
+                    player1Stone :: Int,
+                    player2Stone :: Int,
                     gameList :: [[Int]]
                   } deriving(Eq, Show)
 
@@ -58,7 +60,10 @@ initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cyc
                                                                                                   ((6, 3), Full Dot),
                                                                                                   ((6, 6), Full Dot) ]
                      , gamePlayer = Player2
-                     , gameState = Running,
-                     gameList = listForCheck
+                     , gameState = Running
+                     , player1Stone = 9
+                     , player2Stone = 9
+                     , gameState = Running
+                     , gameList = listForCheck
                    }
           where indexRange = ((0, 0), (n - 1, n - 1))
