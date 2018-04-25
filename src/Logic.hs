@@ -70,7 +70,7 @@ playerTurn game cellCoord
         $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)] }
         $ playerSwitcherConfirm
         $ game { gameBoard = board // [(cellCoord, Full player)] }
-    | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 = switchPlayer1 $ listUnblocker $ remover game cellCoord game
+    | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 && board ! cellCoord /= Full player = switchPlayer1 $ listUnblocker $ remover game cellCoord game
     | otherwise = game
         where board = gameBoard game
               player = gamePlayer game
