@@ -70,7 +70,7 @@ playerTurn game cellCoord
         $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)] }
         $ playerSwitcherConfirm
         $ game { gameBoard = board // [(cellCoord, Full player)] }
-    | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 = switchPlayer1 $ remover game cellCoord game
+    | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 = switchPlayer1 $ listUnblocker $ remover game cellCoord game
     | otherwise = game
         where board = gameBoard game
               player = gamePlayer game
@@ -101,11 +101,25 @@ verticleLine game  [column, row, distance]      | board!(row, column) == board!(
 --                                                           | otherwise = Full Dot
 --                                                                 where  board = gameBoard game
 --                                                                        player = Full $ gamePlayer game
+
+horizontalLineUnblock game  [row, column, distance]    | (board!(row, column) /= board!(row, column + distance) || board!(row, column) /= board!(row, column + 2*distance))   = Full Dot
+                                                          | otherwise = player
+                                                                where  board = gameBoard game
+                                                                       player = Full $ gamePlayer game
+
+verticleLineUnblock game  [column, row, distance]      | (board!(row, column) /= board!(row + distance, column) && board!(row, column) /= board!(row + 2*distance, column))  = Full Dot
+                                                          | otherwise = player
+                                                                where  board = gameBoard game
+                                                                       player = Full $ gamePlayer game
+
                                         
 
 
 finalHorizontalCheck game  = map (horizontalLine game) $ gameList game
 finalVerticalCheck game = map (verticleLine game) $ gameList game
+
+finalHorizontalCheckUnblocker game  = map (horizontalLineUnblock game) $ gameList game
+finalVerticalCheckUnbloccker game = map (verticleLineUnblock game) $ gameList game
 
 -- viewUpdate game     | (finalHorizontalCheck game)!!1 == Full Player1 = game {gameBoard = board // [((3,2), Full Player2)]}
 --                     | (finalVerticalCheck game)!!1 == Full Player2 = game {gameBoard = board // [((6,6), Full Player1)]}
@@ -119,6 +133,17 @@ takeOther game n        | n < 8 && ((finalHorizontalCheck game)!!n == player || 
                                   player = Full $ gamePlayer game
                                   validity = checkList game
 
+unblockOther game k     | k < 8 && ((finalHorizontalCheckUnblocker game)!!n == player || (finalVerticalCheckUnbloccker game)!!k == player) && validity!!k == 0 = k
+                        | k == 8 = 8
+                        | otherwise =  unblockOther game (k + 1)
+                            where board = gameBoard game
+                                  player = Full $ gamePlayer game
+                                  validity = checkList game
+                                
+listUnblocker game  | (unblockOther game 0) < 8 = game { checkList = (replaceNth 1 listf $ unblockOther game 0)}
+                    | otherwise = game
+                        where
+                            listf = checkList game
 -- checkListUpdater game n    | n < 8 = game  { checkList = (replaceNth n listf 0) }
 --                            | otherwise = game
 --                             where
