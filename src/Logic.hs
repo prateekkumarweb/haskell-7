@@ -31,10 +31,16 @@ isCoordCorrect (x, y) = elem (x, y) [ (0, 0),
                                       (6, 3),
                                       (6, 6) ]
 
-switchPlayer game =
+switchPlayer game checker 
+    | checker == 1 && gamePlayer game == Player1 = game { gamePlayer = Player2 }
+    | checker == 1 && gamePlayer game == Player2 = game { gamePlayer = Player1 }                   
+    | otherwise = game
+
+switchPlayer1 game = 
     case gamePlayer game of
-      Player1 -> game { gamePlayer = Player2 }
-      Player2 -> game { gamePlayer = Player1 }
+        Player1 -> game { gamePlayer = Player2 }
+        Player2 -> game { gamePlayer = Player1 }
+    
 
 mousePosAsCellCoord :: (Float, Float) -> (Int, Int)
 mousePosAsCellCoord (x, y) = ( floor((y + (fromIntegral screenHeight * 0.5)) / cellHeight)
@@ -59,40 +65,83 @@ checkGameOver game
 
 playerTurn :: Game ->(Int, Int) -> Game
 playerTurn game cellCoord
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot =
-        checkGameOver
-        $ switchPlayer
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 =
+         checkGameOver
+        $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)] }
+        $ playerSwitcherConfirm
         $ game { gameBoard = board // [(cellCoord, Full player)] }
+    | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 = switchPlayer1 $ remover game cellCoord game
     | otherwise = game
-    where board = gameBoard game
-          player = gamePlayer game
+        where board = gameBoard game
+              player = gamePlayer game
 
 transformGame (EventKey (MouseButton LeftButton) Up _ mousePos) game =
     case gameState game of
         Running -> playerTurn game $ mousePosAsCellCoord mousePos
         GameOver _ -> initialGame
+transformGame _ game = game
 
 
-horizontalLine game  [row, column, distance, validity]    | board!(row, column) == board!(row, column + distance) && board!(row, column) == board!(row, column + 2*distance) && board!(row, column) == player && validity == 1 = player
+horizontalLine game  [row, column, distance]    | board!(row, column) == board!(row, column + distance) && board!(row, column) == board!(row, column + 2*distance) && board!(row, column) == player  = player
                                                           | otherwise = Full Dot
                                                                 where  board = gameBoard game
                                                                        player = Full $ gamePlayer game
 
-verticleLine game  [column, row, distance, validity]      | board!(row, column) == board!(row + distance, column) && board!(row, column) == board!(row + 2*distance, column) && board!(row, column) == player && validity == 1 = player
+verticleLine game  [column, row, distance]      | board!(row, column) == board!(row + distance, column) && board!(row, column) == board!(row + 2*distance, column) && board!(row, column) == player  = player
                                                           | otherwise = Full Dot
                                                                 where  board = gameBoard game
                                                                        player = Full $ gamePlayer game
+
+-- horizontalLine game  [((row, column), data)]                | board!(row, column) == board!(row, column + distance) && board!(row, column) == board!(row, column + 2*distance) && board!(row, column) == player && (data == 10 || data == 7 || data == 4 ) = player
+--                                                             | otherwise = Full Dot
+--                                                                 where  board = gameBoard game
+--                                                                        player = Full $ gamePlayer game
+
+-- verticleLine game  [(row, column), data]                  | board!(row, column) == board!(row + distance, column) && board!(row, column) == board!(row + 2*distance, column) && board!(row, column) == player && (data == 10 || data == 7 || data == 4 ) = player
+--                                                           | otherwise = Full Dot
+--                                                                 where  board = gameBoard game
+--                                                                        player = Full $ gamePlayer game
                                         
 
 
 finalHorizontalCheck game  = map (horizontalLine game) $ gameList game
 finalVerticalCheck game = map (verticleLine game) $ gameList game
 
-viewUpdate game     | (finalHorizontalCheck game)!!1 == Full Player1 = game {gameBoard = board // [((3,2), Full Player2)]}
-                    | (finalVerticalCheck game)!!1 == Full Player2 = game {gameBoard = board // [((6,6), Full Player1)]}
-                    | otherwise =  game {gameBoard = board // [((6,0), Full Player1)]}
-                        where board = gameBoard game
+-- viewUpdate game     | (finalHorizontalCheck game)!!1 == Full Player1 = game {gameBoard = board // [((3,2), Full Player2)]}
+--                     | (finalVerticalCheck game)!!1 == Full Player2 = game {gameBoard = board // [((6,6), Full Player1)]}
+--                     | otherwise =  game {gameBoard = board // [((6,0), Full Player1)]}
+--                         where board = gameBoard game
 
+takeOther game n        | n < 8 && ((finalHorizontalCheck game)!!n == player || (finalVerticalCheck game)!!n == player) && validity!!n == 1 = n
+                        | n == 8 = 8
+                        | otherwise =  takeOther game (n + 1)
+                            where board = gameBoard game
+                                  player = Full $ gamePlayer game
+                                  validity = checkList game
+
+-- checkListUpdater game n    | n < 8 = game  { checkList = (replaceNth n listf 0) }
+--                            | otherwise = game
+--                             where
+--                                 listf = checkList game
+replaceNth newVal (x:xs) n
+                        | n == 0 = newVal:xs
+                        | otherwise = x:replaceNth (n-1) xs newVal
+
+
+
+remover game cellCoord game1   | (takeOther game 0) < 8 = game { gameBoard = board // [(cellCoord, Full Dot)],  checkList = (replaceNth 0 listf $ takeOther game 0)}
+                               | otherwise = game
+                                    where board = gameBoard game
+                                          list = gameList game
+                                          stone = player1Stone game
+                                          listf = checkList game
+
+playerSwitcherConfirm game | (takeOther game 0) < 8 = 0
+                           | otherwise = 1
+                                
+
+-- isTrueTakeOther | takeOther 0 (finalHorizontalCheck game)  < 9 = game {gameBoard = board // [(, Full Player2)]}
+ 
 -- listUpdater game | elem ([] : player) (finalHorizontalCheck) =  game {gameBoard = board // [((3,2), Full Player2)]}
 --                  | elem ([] : player) (finalVerticalCheck) =  game {gameBoard = board // [((6,6), Full Player2)]}
 --                  | otherwise  = game {gameBoard = board // [((6,0), Full Player1)]}
@@ -101,8 +150,10 @@ viewUpdate game     | (finalHorizontalCheck game)!!1 == Full Player1 = game {gam
 
 
 
-transformGame (EventKey (MouseButton LeftButton) Up _ mousePos) game = 
-    case gameState game of 
-        Running -> viewUpdate game
+
+
+-- transformGame (EventKey (MouseButton LeftButton) Up _ mousePos) game = 
+--     case gameState game of 
+--         Running -> viewUpdate game
 
 
