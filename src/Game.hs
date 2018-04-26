@@ -16,6 +16,8 @@ data Game  = Game { gameBoard :: Board,
                     player2Stone :: Int,
                     maxStone1 :: Int,
                     maxStone2 :: Int,
+                    removeStone1 :: Int,
+                    removeStone2 :: Int,
                     moveCoords :: (Int, Int),
                     movedCoordSet :: Int,
                     gameList :: [[Int]],
@@ -33,10 +35,10 @@ listForFinalCheck = [1,1,1,1,1,1,1,1]
 dummyList  =  [((0,0), 10), ((1,1), 7), ((2,2), 4), ((3,0), 4), ((3,4), 4), ((4,2), 4), ((5,1), 7), ((6,0), 10)]
 
 screenWidth :: Int
-screenWidth = 640
+screenWidth = 644
 
 screenHeight :: Int
-screenHeight = 480
+screenHeight = 644
 
 cellWidth :: Float
 cellWidth = fromIntegral screenWidth / fromIntegral n
@@ -74,6 +76,8 @@ initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cyc
                      , player2Stone = 0
                      , maxStone1 = 8
                      , maxStone2 = 8
+                     , removeStone1 = 9
+                     , removeStone2 = 9
                      , moveCoords = (-1, -1)
                      , movedCoordSet = 0
                      , gameList = listForCheck

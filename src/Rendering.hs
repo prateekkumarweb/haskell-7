@@ -10,12 +10,12 @@ import Logic
 
 player1Color = makeColorI 255 50 50 255
 player2Color = makeColorI 50 100 255 255
-boardGridColor = makeColorI 139 69 19 255
-dotColor = makeColorI 139 69 19 255
+gridLightPlayer1 = makeColorI 255 91 91 255
+gridLightPlayer2 = makeColorI 91 131 255 255
 tieColor = greyN 0.5
 
 boardGrid :: Picture
-boardGrid = 
+boardGrid =
      pictures [ line [(46.0, 46.0),(598.0,  46.0)],
                 line [(46.0, 46.0),(46.0,  598.0)],
                 line [(46.0, 598.0),(598.0,  598.0)],
@@ -32,15 +32,23 @@ boardGrid =
                 line [(414.0, 322.0),(598.0,  322.0)],
                 line [(322.0, 46.0),(322.0, 230.0)],
                 line [(322.0, 414.0),(322.0,  598.0)]]
-                 
 
 
-boardAsRunningPicture board =
-    pictures [ color dotColor $ dotCellsOfBoard board
-              , color boardGridColor $ boardGrid
-              , color player1Color $ aCellsOfBoard board
-              , color player2Color $ bCellsOfBoard board
-             ]
+
+boardAsRunningPicture game board
+    | player == Player1 =
+          pictures [ color gridLightPlayer1 $ dotCellsOfBoard board
+                    , color gridLightPlayer1 $ boardGrid
+                    , color player1Color $ aCellsOfBoard board
+                    , color player2Color $ bCellsOfBoard board
+                   ]
+   | player == Player2 =
+         pictures [ color gridLightPlayer2 $ dotCellsOfBoard board
+                   , color gridLightPlayer2 $ boardGrid
+                   , color player1Color $ aCellsOfBoard board
+                   , color player2Color $ bCellsOfBoard board
+                  ]
+        where player = gamePlayer game
 
 snapPictureToCell picture (row, column) = translate x y picture
     where x = fromIntegral column * cellWidth + cellWidth * 0.5
@@ -79,4 +87,4 @@ gameAsPicture game = translate (fromIntegral screenWidth * (-0.5))
                               (fromIntegral screenHeight * (-0.5))
                               frame
    where frame = case gameState game of
-                   Running -> boardAsRunningPicture (gameBoard game)
+                   Running -> boardAsRunningPicture game (gameBoard game)
