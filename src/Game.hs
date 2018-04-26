@@ -16,6 +16,8 @@ data Game  = Game { gameBoard :: Board,
                     player2Stone :: Int,
                     maxStone1 :: Int,
                     maxStone2 :: Int,
+                    moveCoords :: (Int, Int),
+                    movedCoordSet :: Int,
                     gameList :: [[Int]],
                     checkList :: [Int]
                   } deriving(Eq, Show)
@@ -70,8 +72,10 @@ initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cyc
                      , gameState = Running
                      , player1Stone = 0
                      , player2Stone = 0
-                     , maxStone1 = 9
-                     , maxStone2 = 9
+                     , maxStone1 = 8
+                     , maxStone2 = 8
+                     , moveCoords = (-1, -1)
+                     , movedCoordSet = 0
                      , gameList = listForCheck
                      , checkList = listForFinalCheck
                    }

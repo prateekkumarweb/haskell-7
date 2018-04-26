@@ -70,30 +70,145 @@ playerTurn game cellCoord
     -- Else don't recognise the click (for now)
     | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player1 && (player1Stone game) <= (maxStone1 game) =
          checkGameOver
-        $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)] }
+        $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)], player1Stone = n1 + 1  }
         $ playerSwitcherConfirm
         $ game { gameBoard = board // [(cellCoord, Full player)], player1Stone = n1 + 1 }
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player1 && (player1Stone game) > (maxStone1 game) =
-         checkGameOver  -- Write logic for move
-        $ switchPlayer game
-        $ playerSwitcherConfirm
-        $ game
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Player1 && player == Player1 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) == 0 =
+         -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
+         -- make 'stored' = 1
+         -- Don't give chance to the next player
+         -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+         checkGameOver
+         $ setCoords game cellCoord
+         $ checkNeighbour game cellCoord
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player1 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) =
+          checkGameOver
+          $ switchPlayer1
+          $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
+          $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)] }
     | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player2 && (player2Stone game) <= (maxStone2 game) =
          checkGameOver
-        $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)] }
+        $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)], player2Stone = n2 + 1  }
         $ playerSwitcherConfirm
         $ game { gameBoard = board // [(cellCoord, Full player)], player2Stone = n2 + 1 }
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player1 && (player1Stone game) > (maxStone1 game) =
-         checkGameOver  -- Write logic for move
-        $ switchPlayer game
-        $ playerSwitcherConfirm
-        $ game
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Player2 && player == Player2 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 0 =
+         -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
+         -- make 'stored' = 1
+         -- Don't give chance to the next player
+         -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+         checkGameOver
+         $ setCoords game cellCoord
+         $ checkNeighbour game cellCoord
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player2 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) =
+          checkGameOver
+          $ switchPlayer1
+          $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
+          $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)] }
     | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 = switchPlayer1 $ listUnblocker $ remover game cellCoord game
     | otherwise = game
         where board = gameBoard game
               player = gamePlayer game
+              mCoords = moveCoords game
               n1 = player1Stone game
               n2 = player2Stone game
+
+-- 'movedCoordSet' = 1 means the movedCoords are set
+
+validCellCoords game (x, y) mCoords
+    | isUpNeighbour game (x, y) mCoords == 1 =
+        True
+    | isDownNeighbour game (x, y) mCoords == 1 =
+        True
+    | isLeftNeighbour game (x, y) mCoords == 1 =
+        True
+    | isRightNeighbour game (x, y) mCoords == 1 =
+        True
+    | otherwise = False
+
+isUpNeighbour game (x, y) mCoords
+    | x <= 5 && board ! (x + 1, y) == Empty =
+        isUpNeighbour game (x + 1, y) mCoords
+    | x <= 5 && (x + 1, y) == mCoords =
+        1
+    | otherwise = 0
+        where board = gameBoard game
+
+isDownNeighbour game (x, y) mCoords
+    | x >= 1 && board ! (x - 1, y) == Empty =
+        isDownNeighbour game (x - 1, y) mCoords
+    | x >= 1 && (x - 1, y) == mCoords =
+        1
+    | otherwise = 0
+        where board = gameBoard game
+
+isLeftNeighbour game (x, y) mCoords
+    | y >= 1 && board ! (x, y - 1) == Empty =
+        isLeftNeighbour game (x, y - 1) mCoords
+    | y >= 1 && (x + 1, y - 1) == mCoords =
+        1
+    | otherwise = 0
+        where board = gameBoard game
+
+isRightNeighbour game (x, y) mCoords
+    | y <= 5 && board ! (x, y + 1) == Empty =
+        isRightNeighbour game (x, y + 1) mCoords
+    | y <= 5 && (x, y + 1) == mCoords =
+        1
+    | otherwise = 0
+        where board = gameBoard game
+
+setCoordsBack game =
+    game { moveCoords = (-1, -1), movedCoordSet = 0 }
+
+setCoords game cellCoord checker
+    | checker == 1 =
+        game { moveCoords = cellCoord, movedCoordSet = 1 }
+    | otherwise = game
+
+checkNeighbour game cellCoord
+    | isUp game (x, y) == 1 =
+        1
+    | isDown game (x, y) == 1 =
+        1
+    | isLeft game (x, y) == 1 =
+        1
+    | isRight game (x, y) == 1 =
+        1
+    | otherwise = 0
+        where x = fst cellCoord
+              y = snd cellCoord
+
+isUp game (x, y)
+    | x <= 5 && board ! (x + 1, y) == Empty =
+        isUp game (x + 1, y)
+    | x <= 5 && board ! (x + 1, y) == Full Dot =
+        1
+    | otherwise = 0
+        where board = gameBoard game
+
+isDown game (x, y)
+    | x >= 1 && board ! (x - 1, y) == Empty =
+        isDown game (x - 1, y)
+    | x >= 1 && board ! (x - 1, y) == Full Dot =
+        1
+    | otherwise = 0
+        where board = gameBoard game
+
+isLeft game (x, y)
+    | y >= 1 && board ! (x, y - 1) == Empty =
+        isLeft game (x, y - 1)
+    | y >= 1 && board ! (x, y - 1) == Full Dot =
+        1
+    | otherwise = 0
+        where board = gameBoard game
+
+isRight game (x, y)
+    | y <= 5 && board ! (x, y + 1) == Empty =
+        isRight game (x, y + 1)
+    | y <= 5 && board ! (x, y + 1) == Full Dot =
+        1
+    | otherwise = 0
+        where board = gameBoard game
 
 transformGame (EventKey (MouseButton LeftButton) Up _ mousePos) game =
     case gameState game of
@@ -170,7 +285,7 @@ listUnblocker game  | (unblockOther game 0) < 8 = game { checkList = (replaceNth
 --                                 listf = checkList game
 replaceNth newVal (x:xs) n
                         | n == 0 = newVal:xs
-                        | otherwise = x:replaceNth (n-1) xs newVal
+                        | otherwise = x:replaceNth newVal xs (n - 1)
 
 
 
