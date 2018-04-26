@@ -104,7 +104,7 @@ playerTurn game cellCoord
           $ switchPlayer1
           $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
           $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)] }
-    | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 = switchPlayer1 $ listUnblocker $ remover game cellCoord game
+    | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 && board ! cellCoord /= Full player = switchPlayer1 $ listUnblocker $ remover game cellCoord game
     | otherwise = game
         where board = gameBoard game
               player = gamePlayer game
@@ -242,7 +242,7 @@ horizontalLineUnblock game  [row, column, distance]    | (board!(row, column) /=
                                                                 where  board = gameBoard game
                                                                        player = Full $ gamePlayer game
 
-verticleLineUnblock game  [column, row, distance]      | (board!(row, column) /= board!(row + distance, column) && board!(row, column) /= board!(row + 2*distance, column))  = Full Dot
+verticleLineUnblock game  [column, row, distance]      | (board!(row, column) /= board!(row + distance, column) || board!(row, column) /= board!(row + 2*distance, column))  = Full Dot
                                                           | otherwise = player
                                                                 where  board = gameBoard game
                                                                        player = Full $ gamePlayer game
@@ -268,11 +268,10 @@ takeOther game n        | n < 8 && ((finalHorizontalCheck game)!!n == player || 
                                   player = Full $ gamePlayer game
                                   validity = checkList game
 
-unblockOther game k     | k < 8 && ((finalHorizontalCheckUnblocker game)!!n == player || (finalVerticalCheckUnbloccker game)!!k == player) && validity!!k == 0 = k
+unblockOther game k     | k < 8 && ((finalHorizontalCheckUnblocker game)!!n == Full Dot && (finalVerticalCheckUnbloccker game)!!k == Full Dot) && validity!!k == 0 = k
                         | k == 8 = 8
                         | otherwise =  unblockOther game (k + 1)
                             where board = gameBoard game
-                                  player = Full $ gamePlayer game
                                   validity = checkList game
 
 listUnblocker game  | (unblockOther game 0) < 8 = game { checkList = (replaceNth 1 listf $ unblockOther game 0)}
@@ -292,7 +291,6 @@ replaceNth newVal (x:xs) n
 remover game cellCoord game1   | (takeOther game 0) < 8 = game { gameBoard = board // [(cellCoord, Full Dot)],  checkList = (replaceNth 0 listf $ takeOther game 0)}
                                | otherwise = game
                                     where board = gameBoard game
-                                          list = gameList game
                                           stone = player1Stone game
                                           listf = checkList game
 
