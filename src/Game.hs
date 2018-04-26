@@ -35,10 +35,10 @@ listForFinalCheck = [1,1,1,1,1,1,1,1]
 dummyList  =  [((0,0), 10), ((1,1), 7), ((2,2), 4), ((3,0), 4), ((3,4), 4), ((4,2), 4), ((5,1), 7), ((6,0), 10)]
 
 screenWidth :: Int
-screenWidth = 640
+screenWidth = 644
 
 screenHeight :: Int
-screenHeight = 480
+screenHeight = 644
 
 cellWidth :: Float
 cellWidth = fromIntegral screenWidth / fromIntegral n
