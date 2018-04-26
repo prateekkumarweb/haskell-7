@@ -6,13 +6,38 @@ import Graphics.Gloss
 
 import Game
 
+import Logic
+
 player1Color = makeColorI 255 50 50 255
 player2Color = makeColorI 50 100 255 255
+boardGridColor = makeColorI 139 69 19 255
 dotColor = makeColorI 139 69 19 255
 tieColor = greyN 0.5
 
+boardGrid :: Picture
+boardGrid = 
+     pictures [ line [(46.0, 46.0),(598.0,  46.0)],
+                line [(46.0, 46.0),(46.0,  598.0)],
+                line [(46.0, 598.0),(598.0,  598.0)],
+                line [(598.0, 46.0),(598.0,  598.0)],
+                line [(138.0, 138.0),(506.0,  138.0)],
+                line [(138.0, 506.0),(506.0,  506.0)],
+                line [(506.0, 138.0),(506.0,  506.0)],
+                line [(138.0, 138.0),(138.0,  506.0)],
+                line [(230.0, 230.0),(230.0,  414.0)],
+                line [(230.0, 230.0),(414.0,  230.0)],
+                line [(230.0, 414.0),(414.0,  414.0)],
+                line [(414.0, 230.0),(414.0,  414.0)],
+                line [(46.0, 322.0),(230.0,  322.0)],
+                line [(414.0, 322.0),(598.0,  322.0)],
+                line [(322.0, 46.0),(322.0, 230.0)],
+                line [(322.0, 414.0),(322.0,  598.0)]]
+                 
+
+
 boardAsRunningPicture board =
     pictures [ color dotColor $ dotCellsOfBoard board
+              , color boardGridColor $ boardGrid
               , color player1Color $ aCellsOfBoard board
               , color player2Color $ bCellsOfBoard board
              ]

@@ -73,7 +73,7 @@ playerTurn game cellCoord
         $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)], player1Stone = n1 + 1  }
         $ playerSwitcherConfirm
         $ game { gameBoard = board // [(cellCoord, Full player)], player1Stone = n1 + 1 }
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Player1 && player == Player1 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) == 0 =
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Player1 && player == Player1 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) ==  0 && (takeOther game 0) >= 8 =
          -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
          -- make 'stored' = 1
          -- Don't give chance to the next player
@@ -81,9 +81,10 @@ playerTurn game cellCoord
          checkGameOver
          $ setCoords game cellCoord
          $ checkNeighbour game cellCoord
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player1 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) =
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player1 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) && (takeOther game 0) >= 8 =
           checkGameOver
-          $ switchPlayer1
+          $ switchPlayer game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)],  moveCoords = (-1, -1), movedCoordSet = 0 }
+          $ playerSwitcherConfirm
           $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
           $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)] }
     | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player2 && (player2Stone game) <= (maxStone2 game) =
@@ -91,7 +92,7 @@ playerTurn game cellCoord
         $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)], player2Stone = n2 + 1  }
         $ playerSwitcherConfirm
         $ game { gameBoard = board // [(cellCoord, Full player)], player2Stone = n2 + 1 }
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Player2 && player == Player2 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 0 =
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Player2 && player == Player2 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 0 && (takeOther game 0) >= 8 =
          -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
          -- make 'stored' = 1
          -- Don't give chance to the next player
@@ -99,9 +100,10 @@ playerTurn game cellCoord
          checkGameOver
          $ setCoords game cellCoord
          $ checkNeighbour game cellCoord
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player2 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) =
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player2 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) && (takeOther game 0) >= 8 =
           checkGameOver
-          $ switchPlayer1
+          $ switchPlayer game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)],  moveCoords = (-1, -1), movedCoordSet = 0 }
+          $ playerSwitcherConfirm
           $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
           $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)] }
     | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 && board ! cellCoord /= Full player = switchPlayer1 $ listUnblocker $ remover game cellCoord game
@@ -144,7 +146,7 @@ isDownNeighbour game (x, y) mCoords
 isLeftNeighbour game (x, y) mCoords
     | y >= 1 && board ! (x, y - 1) == Empty =
         isLeftNeighbour game (x, y - 1) mCoords
-    | y >= 1 && (x + 1, y - 1) == mCoords =
+    | y >= 1 && (x , y - 1) == mCoords =
         1
     | otherwise = 0
         where board = gameBoard game
