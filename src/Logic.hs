@@ -60,8 +60,8 @@ checkGameOver game
     | otherwise = game
     where board = gameBoard game
           cell  = Full Dot
-          p1    = maxStone1 game
-          p2    = maxStone2 game
+          p1    = removeStone1 game
+          p2    = removeStone2 game
 
 playerTurn :: Game ->(Int, Int) -> Game
 playerTurn game cellCoord
@@ -77,7 +77,7 @@ playerTurn game cellCoord
          -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
          -- make 'stored' = 1
          -- Don't give chance to the next player
-         -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+         -- If movedCoordSet == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
          checkGameOver
          $ setCoords game cellCoord
          $ checkNeighbour game cellCoord
@@ -95,7 +95,7 @@ playerTurn game cellCoord
          -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
          -- make 'stored' = 1
          -- Don't give chance to the next player
-         -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+         -- If movedCoordSet == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
          checkGameOver
          $ setCoords game cellCoord
          $ checkNeighbour game cellCoord
@@ -144,7 +144,7 @@ isDownNeighbour game (x, y) mCoords
 isLeftNeighbour game (x, y) mCoords
     | y >= 1 && board ! (x, y - 1) == Empty =
         isLeftNeighbour game (x, y - 1) mCoords
-    | y >= 1 && (x + 1, y - 1) == mCoords =
+    | y >= 1 && (x, y - 1) == mCoords =
         1
     | otherwise = 0
         where board = gameBoard game
@@ -288,11 +288,16 @@ replaceNth newVal (x:xs) n
 
 
 
-remover game cellCoord game1   | (takeOther game 0) < 8 = game { gameBoard = board // [(cellCoord, Full Dot)],  checkList = (replaceNth 0 listf $ takeOther game 0)}
+remover game cellCoord game1   | (takeOther game 0) < 8 && player == Player1 =
+                                    game { gameBoard = board // [(cellCoord, Full Dot)],  checkList = (replaceNth 0 listf $ takeOther game 0), removeStone1 = stone2 - 1}
+                               | (takeOther game 0) < 8 && player == Player2 =
+                                    game { gameBoard = board // [(cellCoord, Full Dot)],  checkList = (replaceNth 0 listf $ takeOther game 0), removeStone2 = stone1 - 1}
                                | otherwise = game
                                     where board = gameBoard game
-                                          stone = player1Stone game
+                                          stone1 = removeStone1 game
+                                          stone2 = removeStone2 game
                                           listf = checkList game
+                                          player = gamePlayer game
 
 playerSwitcherConfirm game | (takeOther game 0) < 8 = 0
                            | otherwise = 1

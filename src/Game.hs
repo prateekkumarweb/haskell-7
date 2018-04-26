@@ -16,6 +16,8 @@ data Game  = Game { gameBoard :: Board,
                     player2Stone :: Int,
                     maxStone1 :: Int,
                     maxStone2 :: Int,
+                    removeStone1 :: Int,
+                    removeStone2 :: Int,
                     moveCoords :: (Int, Int),
                     movedCoordSet :: Int,
                     gameList :: [[Int]],
@@ -74,6 +76,8 @@ initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cyc
                      , player2Stone = 0
                      , maxStone1 = 8
                      , maxStone2 = 8
+                     , removeStone1 = 9
+                     , removeStone2 = 9
                      , moveCoords = (-1, -1)
                      , movedCoordSet = 0
                      , gameList = listForCheck
