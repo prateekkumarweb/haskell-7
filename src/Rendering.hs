@@ -6,7 +6,7 @@ import Graphics.Gloss
 
 import Game
 
-import Logic
+import Logic1
 
 player1Color = makeColorI 255 50 50 255
 player2Color = makeColorI 50 100 255 255

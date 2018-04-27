@@ -26,7 +26,10 @@ data Game  = Game { gameBoard :: Board,
                     movedCoordSet :: Int,
                     gameList :: [[Int]],
                     checkListH :: [Int],
-                    checkListV :: [Int]
+                    checkListV :: [Int],
+                    checker :: Int,
+                    playerMovedCoords :: (Int, Int),
+                    botCoords :: (Int, Int)
                   } deriving(Eq, Show)
 
 
@@ -91,6 +94,9 @@ initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cyc
                      , gameList = listForCheck
                      , checkListH = listForHorizontalCheck
                      , checkListV = listForVerticalCheck
+                     , checker = 1
+                     , playerMovedCoords = (-1, -1)
+                     , botCoords = (-1, -1)
                    }
           where indexRange = ((0, 0), (n - 1, n - 1))
                 indexRange1 = ((0, 0), (0, 1))
