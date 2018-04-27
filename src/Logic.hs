@@ -41,6 +41,9 @@ switchPlayer1 game =
         Player1 -> game { gamePlayer = Player2 }
         Player2 -> game { gamePlayer = Player1 }
 
+mousePosAsMenuCellCoord (x, y) = ( floor((y + (fromIntegral screenHeight * 0.5)) / (fromIntegral screenHeight))
+                               , floor((x + (fromIntegral screenWidth * 0.5)) / (fromIntegral screenWidth / 2))
+                               )
 
 mousePosAsCellCoord :: (Float, Float) -> (Int, Int)
 mousePosAsCellCoord (x, y) = ( floor((y + (fromIntegral screenHeight * 0.5)) / cellHeight)
@@ -286,9 +289,15 @@ isRight game (x, y)
 
 transformGame (EventKey (MouseButton LeftButton) Up _ mousePos) game =
     case gameState game of
+        Menu -> openGame game $ mousePosAsMenuCellCoord mousePos
         Running -> playerTurn game $ mousePosAsCellCoord mousePos
         GameOver _ -> initialGame
 transformGame _ game = game
+
+openGame :: Game ->(Int, Int) -> Game
+openGame game menuCell
+    | menuCell == (0, 0) = game { gameState = Running }
+    | menuCell == (0, 1) = game { gameState = Running }
 
 
 horizontalLine game  [row, column, distance]    | board!(row, column) == board!(row, column + distance) && board!(row, column) == board!(row, column + 2*distance) && board!(row, column) == player  = player
@@ -393,8 +402,8 @@ replaceNth newVal (x:xs) n
 
 
 
-removerH cellCoord game          | (takeOtherH game 0) < 8 && player == Player1  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone1 = stone1 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
-                                 | (takeOtherH game 0) < 8 && player == Player2  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone2 = stone2 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
+removerH cellCoord game          | (takeOtherH game 0) < 8 && player == Player1  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone2 = stone2 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
+                                 | (takeOtherH game 0) < 8 && player == Player2  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone1 = stone1 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
                                  | otherwise = game
                                     where board = gameBoard game
                                           listH = checkListH game
@@ -404,8 +413,8 @@ removerH cellCoord game          | (takeOtherH game 0) < 8 && player == Player1 
 
 
 
-removerV cellCoord game          | (takeOtherV game 0) < 8 && player == Player1  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone1 = stone1 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
-                                 | (takeOtherV game 0) < 8 && player == Player2  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone2 = stone2 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
+removerV cellCoord game          | (takeOtherV game 0) < 8 && player == Player1  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone2 = stone2 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
+                                 | (takeOtherV game 0) < 8 && player == Player2  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone1 = stone1 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
                                  | otherwise = game
                                     where board = gameBoard game
                                           listV = checkListV game

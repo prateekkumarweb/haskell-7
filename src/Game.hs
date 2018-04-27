@@ -4,12 +4,16 @@ import Data.Array
 
 data Player = Player1 | Player2 | Dot deriving(Eq, Show)
 data Cell = Empty | Full Player deriving (Eq, Show)
-data State = Running | GameOver (Maybe Player) deriving (Eq, Show)
+data State = Menu | Running | GameOver (Maybe Player) deriving (Eq, Show)
 
 type Board = Array (Int, Int) Cell
 
+data Choice = Multi | Single deriving(Eq, Show)
+type MenuBoard = Array (Int, Int) Choice
+
 
 data Game  = Game { gameBoard :: Board,
+                    menuBoard :: MenuBoard,
                     gamePlayer :: Player,
                     gameState :: State,
                     player1Stone :: Int,
@@ -72,8 +76,10 @@ initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cyc
                                                                                                   ((6, 0), Full Dot),
                                                                                                   ((6, 3), Full Dot),
                                                                                                   ((6, 6), Full Dot) ]
+                     , menuBoard = (array indexRange1 $ zip (range indexRange1) (cycle [Multi])) // [ ((0, 0), Multi),
+                                                                                                      ((0, 1), Single) ]
                      , gamePlayer = Player2
-                     , gameState = Running
+                     , gameState = Menu
                      , player1Stone = 0
                      , player2Stone = 0
                      , maxStone1 = 8
@@ -87,3 +93,4 @@ initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cyc
                      , checkListV = listForVerticalCheck
                    }
           where indexRange = ((0, 0), (n - 1, n - 1))
+                indexRange1 = ((0, 0), (0, 1))

@@ -33,7 +33,17 @@ boardGrid =
                 line [(322.0, 46.0),(322.0, 230.0)],
                 line [(322.0, 414.0),(322.0,  598.0)]]
 
+tileRenderMulti :: Picture
+tileRenderMulti =
+    pictures [ Text "Multi Player" ]
 
+tileRenderSingle :: Picture
+tileRenderSingle =
+    pictures [ Text "Single Player" ]
+
+boardMenuPicture game board =
+    pictures [ color player1Color $ tileRenderMultiCell board
+              , color player2Color $ tileRenderSingleCell board ]
 
 boardAsRunningPicture game board
     | player == Player1 =
@@ -73,6 +83,16 @@ cellsOfBoard board cell cellPicture =
     $ filter (\(_, e) -> e == cell)
     $ assocs board
 
+menuCellsBoard board choice menuPicture =
+    pictures
+    $ map (snapPictureToCell menuPicture . fst)
+    $ filter (\(_, e) -> e == choice)
+    $ assocs board
+
+tileRenderMultiCell board = menuCellsBoard board Multi tileRenderMulti
+
+tileRenderSingleCell board = menuCellsBoard board Single tileRenderSingle
+
 aCellsOfBoard :: Board -> Picture
 aCellsOfBoard board = cellsOfBoard board (Full Player1) aCell
 
@@ -87,4 +107,5 @@ gameAsPicture game = translate (fromIntegral screenWidth * (-0.5))
                               (fromIntegral screenHeight * (-0.5))
                               frame
    where frame = case gameState game of
+                   Menu -> boardMenuPicture game (menuBoard game)
                    Running -> boardAsRunningPicture game (gameBoard game)
