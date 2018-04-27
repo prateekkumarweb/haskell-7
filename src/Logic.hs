@@ -57,11 +57,34 @@ checkGameOver game
         game { gameState = GameOver $ Just Player1 }
     | countCells cell board == 0 =
         game { gameState = GameOver Nothing }
+    -- 'checkBoardForViable game player' returns 0 if no viable move for 'player' in that game state
+    | checkBoardForViable game == 0 && player == Player1 =
+        game { gameState = GameOver $ Just Player2 }
+    | checkBoardForViable game == 0 && player == Player2 =
+        game { gameState = GameOver $ Just Player1 }
     | otherwise = game
     where board = gameBoard game
           cell  = Full Dot
+          player = gamePlayer game
           p1    = removeStone1 game
           p2    = removeStone2 game
+
+checkBoardForViable game
+    | traverseBoard game (0, 0) == 0 =
+        0
+    | otherwise = 1
+
+traverseBoard game (x, y)
+    | checkNeighbour game (x, y) == 0 && Full player == board ! (x, y) && x <= 5 =
+        -- Means no viable move for player at (x, y)
+        traverseBoard game (x + 1, y)
+    | checkNeighbour game (x, y) == 0 && Full player == board ! (x, y) && x == 6 && y <= 5 =
+        traverseBoard game (0, y + 1)
+    | checkNeighbour game (x, y) == 0 && Full player == board ! (x, y) && x == 6 && y == 6 =
+        0
+    | otherwise = 1
+        where board = gameBoard game
+              player = gamePlayer game
 
 playerTurn :: Game ->(Int, Int) -> Game
 playerTurn game cellCoord
