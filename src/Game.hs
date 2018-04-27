@@ -21,7 +21,8 @@ data Game  = Game { gameBoard :: Board,
                     moveCoords :: (Int, Int),
                     movedCoordSet :: Int,
                     gameList :: [[Int]],
-                    checkList :: [Int]
+                    checkListH :: [Int],
+                    checkListV :: [Int]
                   } deriving(Eq, Show)
 
 
@@ -30,7 +31,8 @@ n = 7
 
 -- listForCheck = [[1,0,0,3], [1,1,1,2], [1,2,2,1], [1,3,0,1], [1,3,4,1], [1,4,2,1], [1,5,1,2], [1,6,0,3]]
 listForCheck = [[0,0,3], [1,1,2], [2,2,1], [3,0,1], [3,4,1], [4,2,1], [5,1,2], [6,0,3]]
-listForFinalCheck = [1,1,1,1,1,1,1,1]
+listForHorizontalCheck = [1,1,1,1,1,1,1,1]
+listForVerticalCheck = [1,1,1,1,1,1,1,1]
 
 dummyList  =  [((0,0), 10), ((1,1), 7), ((2,2), 4), ((3,0), 4), ((3,4), 4), ((4,2), 4), ((5,1), 7), ((6,0), 10)]
 
@@ -81,6 +83,7 @@ initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cyc
                      , moveCoords = (-1, -1)
                      , movedCoordSet = 0
                      , gameList = listForCheck
-                     , checkList = listForFinalCheck
+                     , checkListH = listForHorizontalCheck
+                     , checkListV = listForVerticalCheck
                    }
           where indexRange = ((0, 0), (n - 1, n - 1))
