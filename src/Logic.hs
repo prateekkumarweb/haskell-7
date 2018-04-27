@@ -58,9 +58,9 @@ checkGameOver game
     | countCells cell board == 0 =
         game { gameState = GameOver Nothing }
     -- 'checkBoardForViable game player' returns 0 if no viable move for 'player' in that game state
-    | checkBoardForViable game == 0 && player == Player1 =
+    | checkBoardForViable game == 0 && player == Player1 && (player1Stone game) > (maxStone1 game)  =
         game { gameState = GameOver $ Just Player2 }
-    | checkBoardForViable game == 0 && player == Player2 =
+    | checkBoardForViable game == 0 && player == Player2 && (player1Stone game) > (maxStone1 game) =
         game { gameState = GameOver $ Just Player1 }
     | otherwise = game
     where board = gameBoard game
@@ -75,12 +75,19 @@ checkBoardForViable game
     | otherwise = 1
 
 traverseBoard game (x, y)
-    | checkNeighbour game (x, y) == 0 && Full player == board ! (x, y) && x <= 5 =
+    | checkNeighbour game (x, y) == 0 && x <= 5 =
         -- Means no viable move for player at (x, y)
         traverseBoard game (x + 1, y)
-    | checkNeighbour game (x, y) == 0 && Full player == board ! (x, y) && x == 6 && y <= 5 =
+    | checkNeighbour game (x, y) == 1 && Full player /= board ! (x, y) && x <= 5 =
+        -- Means no viable move for player at (x, y)
+        traverseBoard game (x + 1, y)
+    | checkNeighbour game (x, y) == 0 && x == 6 && y <= 5 =
         traverseBoard game (0, y + 1)
-    | checkNeighbour game (x, y) == 0 && Full player == board ! (x, y) && x == 6 && y == 6 =
+    | checkNeighbour game (x, y) == 1 && Full player /= board ! (x, y) && x == 6 && y <= 5 =
+        traverseBoard game (0, y + 1)
+    | checkNeighbour game (x, y) == 0 && x == 6 && y == 6 =
+        0
+    | checkNeighbour game (x, y) == 1 && Full player /= board ! (x, y) && x == 6 && y == 6 =
         0
     | otherwise = 1
         where board = gameBoard game
@@ -297,7 +304,7 @@ takeOtherH game n        | n < 8 && ((finalHorizontalCheck game)!!n == player) &
                                   player = Full $ gamePlayer game
                                   validityH = checkListH game
 
-takeOtherV game n       | n < 8 && ((finalVerticalCheck game)!!n == player) && validityV!!n == 1 = n 
+takeOtherV game n       | n < 8 && ((finalVerticalCheck game)!!n == player) && validityV!!n == 1 = n
                         | n == 8 = 8
                         | otherwise =  takeOtherV game (n + 1)
                             where board = gameBoard game
@@ -352,19 +359,19 @@ removerH cellCoord game          | (takeOtherH game 0) < 8  = game { gameBoard =
                                  | otherwise = game
                                     where board = gameBoard game
                                           listH = checkListH game
-                                          
-                                          
-                                          
+
+
+
 
 removerV cellCoord game          | (takeOtherV game 0) < 8  = game { gameBoard = board // [(cellCoord, Full Dot)],  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
                                  | otherwise = game
                                     where board = gameBoard game
                                           listV = checkListV game
-                                          
+
 
 playerSwitcherConfirm game | (takeOther game)  < 8 = 0
                            | otherwise = 1
-                
+
 printerGame game = print (listV)
                     where listV = checkListV game
 
