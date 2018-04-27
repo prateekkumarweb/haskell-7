@@ -60,55 +60,57 @@ checkGameOver game
     | otherwise = game
     where board = gameBoard game
           cell  = Full Dot
-          p1    = removeStone1 game
-          p2    = removeStone2 game
+          p1    = maxStone1 game
+          p2    = maxStone2 game
 
 playerTurn :: Game ->(Int, Int) -> Game
 playerTurn game cellCoord
     -- If player1Stone <= maxStone1 and chance = player1
     -- then player1Stone++ and replace cellCoord with Full player
     -- Else don't recognise the click (for now)
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player1 && (player1Stone game) <= (maxStone1 game) =
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game) >= 8 && player == Player1 && (player1Stone game) <= (maxStone1 game) =
          checkGameOver
+        $ listUnblockerV
+        $ listUnblockerH
         $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)], player1Stone = n1 + 1  }
         $ playerSwitcherConfirm
         $ game { gameBoard = board // [(cellCoord, Full player)], player1Stone = n1 + 1 }
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Player1 && player == Player1 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) == 0 =
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Player1 && player == Player1 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) ==  0 && (takeOther game) >= 8 =
          -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
          -- make 'stored' = 1
          -- Don't give chance to the next player
-         -- If movedCoordSet == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+         -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
          checkGameOver
          $ setCoords game cellCoord
          $ checkNeighbour game cellCoord
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player1 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) =
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player1 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) && (takeOther game) >= 8 =
           checkGameOver
-          $ listUnblocker
+          $ listUnblockerV
+          $ listUnblockerH
           $ switchPlayer game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)],  moveCoords = (-1, -1), movedCoordSet = 0 }
           $ playerSwitcherConfirm
         --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
           $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)] }
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game 0) >= 8 && player == Player2 && (player2Stone game) <= (maxStone2 game) =
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game) >= 8 && player == Player2 && (player2Stone game) <= (maxStone2 game) =
          checkGameOver
         $ switchPlayer game { gameBoard = board // [(cellCoord, Full player)], player2Stone = n2 + 1  }
         $ playerSwitcherConfirm
         $ game { gameBoard = board // [(cellCoord, Full player)], player2Stone = n2 + 1 }
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Player2 && player == Player2 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 0 =
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Player2 && player == Player2 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 0 && (takeOther game) >= 8 =
          -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
          -- make 'stored' = 1
          -- Don't give chance to the next player
-         -- If movedCoordSet == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+         -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
          checkGameOver
          $ setCoords game cellCoord
          $ checkNeighbour game cellCoord
-    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player2 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) =
+    | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player2 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) && (takeOther game) >= 8 =
           checkGameOver
-          $ listUnblocker
           $ switchPlayer game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)],  moveCoords = (-1, -1), movedCoordSet = 0 }
           $ playerSwitcherConfirm
         --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
           $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)] }
-    | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game 0) < 8 && board ! cellCoord /= Full player = switchPlayer1 $ listUnblocker $ remover game cellCoord game
+    | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game) < 8 && board ! cellCoord /= Full player = switchPlayer1 $ listUnblockerV $ listUnblockerH $ removerV cellCoord  $ removerH cellCoord game
     | otherwise = game
         where board = gameBoard game
               player = gamePlayer game
@@ -148,7 +150,7 @@ isDownNeighbour game (x, y) mCoords
 isLeftNeighbour game (x, y) mCoords
     | y >= 1 && board ! (x, y - 1) == Empty =
         isLeftNeighbour game (x, y - 1) mCoords
-    | y >= 1 && (x, y - 1) == mCoords =
+    | y >= 1 && (x , y - 1) == mCoords =
         1
     | otherwise = 0
         where board = gameBoard game
@@ -265,46 +267,83 @@ finalVerticalCheckUnbloccker game = map (verticleLineUnblock game) $ gameList ga
 --                     | otherwise =  game {gameBoard = board // [((6,0), Full Player1)]}
 --                         where board = gameBoard game
 
-takeOther game n        | n < 8 && ((finalHorizontalCheck game)!!n == player || (finalVerticalCheck game)!!n == player) && validity!!n == 1 = n
+takeOtherH game n        | n < 8 && ((finalHorizontalCheck game)!!n == player) && validityH!!n == 1 = n
                         | n == 8 = 8
-                        | otherwise =  takeOther game (n + 1)
+                        | otherwise =  takeOtherH game (n + 1)
                             where board = gameBoard game
                                   player = Full $ gamePlayer game
-                                  validity = checkList game
+                                  validityH = checkListH game
 
-unblockOther game k     | k < 8 && ((finalHorizontalCheckUnblocker game)!!k == Full Dot && (finalVerticalCheckUnbloccker game)!!k == Full Dot) && validity!!k == 0 = k
-                        | k == 8 = 8
-                        | otherwise =  unblockOther game (k + 1)
+takeOtherV game n       | n < 8 && ((finalVerticalCheck game)!!n == player) && validityV!!n == 1 = n 
+                        | n == 8 = 8
+                        | otherwise =  takeOtherV game (n + 1)
                             where board = gameBoard game
-                                  validity = checkList game
+                                  player = Full $ gamePlayer game
+                                  validityV = checkListV game
 
-listUnblocker game  | (unblockOther game 0) < 8 = game { checkList = (replaceNth 1 listf $ unblockOther game 0)}
-                    | otherwise = game
-                        where
-                            listf = checkList game
+takeOther game         |  (((takeOtherH game 0) < 8) || ((takeOtherV game 0) < 8)) = 1
+                        | otherwise = 8
+
+unblockOtherH game k    | k < 8 && ((finalHorizontalCheckUnblocker game)!!k == Full Dot) && validityH!!k == 0 = k
+                        | k == 8 = 8
+                        | otherwise =  unblockOtherH game (k + 1)
+                            where board = gameBoard game
+                                  validityH = checkListH game
+
+unblockOtherV game k   | k < 8 && ((finalVerticalCheckUnbloccker game)!!k == Full Dot) && validityV!!k == 0 = k
+                        | k == 8 = 8
+                        | otherwise =  unblockOtherV game (k + 1)
+                            where board = gameBoard game
+                                  validityV = checkListV game
+
+listUnblockerH  game | (unblockOtherH game 0) < 8 = game { checkListH = (replaceNth 1 validityH $ unblockOtherH game 0)}
+                     | otherwise = game
+                        where validityH = checkListH game
+
+listUnblockerV  game | (unblockOtherV game 0) < 8 = game { checkListV = (replaceNth 1 validityV $ unblockOtherV game 0)}
+                     | otherwise = game
+                        where validityV = checkListV game
+
+
+
+-- listUnblocker game    | (unblockOther game 0) < 8 && validityH!!(unblockOther game 0) == 0 && ((finalHorizontalCheckUnblocker game)!!(unblockOther game 0) == Full Dot) = game { checkListH = (replaceNth 1 validityH $ unblockOther game 0)}
+--                             | (unblockOther game 0) < 8 && validityV!!(unblockOther game 0) == 0 && ((finalVerticalCheckUnbloccker game)!!(unblockOther game 0) == Full Dot) = game { checkListV = (replaceNth 1 validityV $ unblockOther game 0)}
+--                             | otherwise = game
+--                                 where
+--                                     validityH = checkListV game
+--                                     validityV = checkListV game
 -- checkListUpdater game n    | n < 8 = game  { checkList = (replaceNth n listf 0) }
 --                            | otherwise = game
 --                             where
 --                                 listf = checkList game
+
+tattiList game = game { checkListV = (replaceNth 1 validityV 0) }
+                    where validityV = checkListV game
 replaceNth newVal (x:xs) n
                         | n == 0 = newVal:xs
                         | otherwise = x:replaceNth newVal xs (n - 1)
 
 
 
-remover game cellCoord game1   | (takeOther game 0) < 8 && player == Player1 =
-                                    game { gameBoard = board // [(cellCoord, Full Dot)],  checkList = (replaceNth 0 listf $ takeOther game 0), removeStone1 = stone2 - 1}
-                               | (takeOther game 0) < 8 && player == Player2 =
-                                    game { gameBoard = board // [(cellCoord, Full Dot)],  checkList = (replaceNth 0 listf $ takeOther game 0), removeStone2 = stone1 - 1}
-                               | otherwise = game
+removerH cellCoord game          | (takeOtherH game 0) < 8  = game { gameBoard = board // [(cellCoord, Full Dot)],  checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
+                                 | otherwise = game
                                     where board = gameBoard game
-                                          stone1 = removeStone1 game
-                                          stone2 = removeStone2 game
-                                          listf = checkList game
-                                          player = gamePlayer game
+                                          listH = checkListH game
+                                          
+                                          
+                                          
 
-playerSwitcherConfirm game | (takeOther game 0) < 8 = 0
+removerV cellCoord game          | (takeOtherV game 0) < 8  = game { gameBoard = board // [(cellCoord, Full Dot)],  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
+                                 | otherwise = game
+                                    where board = gameBoard game
+                                          listV = checkListV game
+                                          
+
+playerSwitcherConfirm game | (takeOther game)  < 8 = 0
                            | otherwise = 1
+                
+printerGame game = print (listV)
+                    where listV = checkListV game
 
 
 -- isTrueTakeOther | takeOther 0 (finalHorizontalCheck game)  < 9 = game {gameBoard = board // [(, Full Player2)]}
