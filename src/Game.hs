@@ -4,7 +4,7 @@ import Data.Array
 
 data Player = Player1 | Player2 | Dot deriving(Eq, Show)
 data Cell = Empty | Full Player deriving (Eq, Show)
-data State = Menu | Running | GameOver (Maybe Player) deriving (Eq, Show)
+data State = Menu | Running | RunningB | GameOver (Maybe Player) deriving (Eq, Show)
 
 type Board = Array (Int, Int) Cell
 

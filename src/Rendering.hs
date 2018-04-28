@@ -109,3 +109,4 @@ gameAsPicture game = translate (fromIntegral screenWidth * (-0.5))
    where frame = case gameState game of
                    Menu -> boardMenuPicture game (menuBoard game)
                    Running -> boardAsRunningPicture game (gameBoard game)
+                   RunningB -> boardAsRunningPicture game (gameBoard game)

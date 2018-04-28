@@ -149,8 +149,103 @@ module Logic1 where
             where board = gameBoard game
                   player = gamePlayer game
 
+
     playerTurn :: Game ->(Int, Int) -> Game
     playerTurn game cellCoord
+        -- If player1Stone <= maxStone1 and chance = player1
+        -- then player1Stone++ and replace cellCoord with Full player
+        -- Else don't recognise the click (for now)
+        | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game) >= 8 && player == Player1 && (player1Stone game) <= (maxStone1 game) =
+             checkGameOver
+            $ listUnblockerV
+            $ listUnblockerH
+            $ switchPlayer
+            $ playerSwitcherConfirm
+            $ game { gameBoard = board // [(cellCoord, Full player)], player1Stone = n1 + 1 }
+        | isCoordCorrect cellCoord && board ! cellCoord == Full Player1 && player == Player1 && (removeStone1 game) > 3 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) ==  0 && (takeOther game) >= 8 =
+             -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
+             -- make 'stored' = 1
+             -- Don't give chance to the next player
+             -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+             checkGameOver
+             $ setCoords game cellCoord
+             $ checkNeighbour game cellCoord
+        | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player1 && (removeStone1 game) > 3 && (player1Stone game) > (maxStone1 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) && (takeOther game) >= 8 =
+              checkGameOver
+              $ listUnblockerV
+              $ listUnblockerH
+              $ switchPlayer
+              $ playerSwitcherConfirm
+            --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
+              $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)],  moveCoords = (-1, -1), movedCoordSet = 0 }
+        -- Fly Logic when 3 stones are left
+        | isCoordCorrect cellCoord && board ! cellCoord == Full Player1 && player == Player1 && (removeStone1 game) <= 3 && (movedCoordSet game) ==  0 && (takeOther game) >= 8 =
+             -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
+             -- make 'stored' = 1
+             -- Don't give chance to the next player
+             -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+             checkGameOver
+             $ setCoords game cellCoord 1
+        | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player1 && (removeStone1 game) <= 3 && (movedCoordSet game) == 1 && board ! cellCoord == Full Dot && (takeOther game) >= 8 =
+              checkGameOver
+              $ listUnblockerV
+              $ listUnblockerH
+              $ switchPlayer
+              $ playerSwitcherConfirm
+            --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
+              $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)],  moveCoords = (-1, -1), movedCoordSet = 0 }
+        -- Fly logic ends
+        | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game) >= 8 && player == Player2 && (player2Stone game) <= (maxStone2 game) =
+             checkGameOver
+            $ listUnblockerV
+            $ listUnblockerH
+            $ switchPlayer
+            $ playerSwitcherConfirm
+            $ game { gameBoard = board // [(cellCoord, Full player)], player2Stone = n2 + 1 }
+        | isCoordCorrect cellCoord && board ! cellCoord == Full Player2 && player == Player2 && (removeStone2 game) > 3 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 0 && (takeOther game) >= 8 =
+             -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
+             -- make 'stored' = 1
+             -- Don't give chance to the next player
+             -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+             checkGameOver
+             $ setCoords game cellCoord
+             $ checkNeighbour game cellCoord
+        | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player2 && (removeStone2 game) > 3 && (player2Stone game) > (maxStone2 game) && (movedCoordSet game) == 1 && (validCellCoords game cellCoord mCoords) && (takeOther game) >= 8 =
+              checkGameOver
+              $ listUnblockerV
+              $ listUnblockerH
+              $ switchPlayer
+              $ playerSwitcherConfirm
+            --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
+              $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)],  moveCoords = (-1, -1), movedCoordSet = 0 }
+        -- Fly Logic when 3 stones are left
+        | isCoordCorrect cellCoord && board ! cellCoord == Full Player2 && player == Player2 && (removeStone2 game) <= 3 && (movedCoordSet game) ==  0 && (takeOther game) >= 8 =
+             -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
+             -- make 'stored' = 1
+             -- Don't give chance to the next player
+             -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+             checkGameOver
+             $ setCoords game cellCoord 1
+        | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player2 && (removeStone2 game) <= 3 && (movedCoordSet game) == 1 && board ! cellCoord == Full Dot && (takeOther game) >= 8 =
+              checkGameOver
+              $ listUnblockerV
+              $ listUnblockerH
+              $ switchPlayer
+              $ playerSwitcherConfirm
+            --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
+              $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)],  moveCoords = (-1, -1), movedCoordSet = 0 }
+        -- Fly logic ends
+        | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game) < 8 && board ! cellCoord /= Full player = switchPlayer1 $ listUnblockerV $ listUnblockerH $ removerV cellCoord  $ removerH cellCoord game
+        | otherwise = game
+            where board = gameBoard game
+                  player = gamePlayer game
+                  mCoords = moveCoords game
+                  n1 = player1Stone game
+                  n2 = player2Stone game
+
+
+    playerTurnB :: Game ->(Int, Int) -> Game
+    playerTurnB game cellCoord
         -- If player1Stone <= maxStone1 and chance = player1
         -- then player1Stone++ and replace cellCoord with Full player
         -- Else don't recognise the click (for now)
@@ -178,21 +273,21 @@ module Logic1 where
             --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
               $ botMove game (0,0)
         -- Fly Logic when 3 stones are left
-        | isCoordCorrect cellCoord && board ! cellCoord == Full Player1 && player == Player1 && (removeStone1 game) <= 3 && (movedCoordSet game) ==  0 && (takeOther game) >= 8 =
-             -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
-             -- make 'stored' = 1
-             -- Don't give chance to the next player
-             -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
-             checkGameOver
-             $ setCoords game cellCoord 1
-        | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && player == Player1 && (removeStone1 game) <= 3 && (movedCoordSet game) == 1 && board ! cellCoord == Full Dot && (takeOther game) >= 8 =
+        -- | isCoordCorrect cellCoord && board ! cellCoord == Full Player1 && player == Player1 && (removeStone1 game) <= 3 && (movedCoordSet game) ==  0 && (takeOther game) >= 8 =
+        --      -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
+        --      -- make 'stored' = 1
+        --      -- Don't give chance to the next player
+        --      -- If stored == 1, then check if curent click is a neighbour of stored coords (and then remove the stored coords and render the current clicked coords)
+        --      checkGameOver
+        --      $ setCoords game cellCoord 1
+        | player == Player1 && (removeStone1 game) <= 3 && (takeOther game) >= 8 =
               checkGameOver
               $ listUnblockerV
               $ listUnblockerH
               $ switchPlayer
               $ playerSwitcherConfirm
             --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
-              $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)] }
+              $ botFlyMove game (0, 0)
         -- Fly logic ends
         | isCoordCorrect cellCoord && board ! cellCoord == Full Dot && (takeOther game) >= 8 && player == Player2 && (player2Stone game) <= (maxStone2 game) =
              checkGameOver
@@ -232,7 +327,7 @@ module Logic1 where
               $ switchPlayer
               $ playerSwitcherConfirm
             --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
-              $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)], playerMovedCoords = cellCoord }
+              $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)], playerMovedCoords = cellCoord, moveCoords = (-1, -1), movedCoordSet = 0}
         -- Fly logic ends
         | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game) < 8 && board ! cellCoord /= Full player && player == Player2 = switchPlayer1 $ listUnblockerV $ listUnblockerH $ removerV cellCoord  $ removerH cellCoord game
         |  (takeOther game) < 8 &&  player == Player1 = switchPlayer1 $ listUnblockerV $ listUnblockerH $ removerVB $ removerHB game
@@ -435,13 +530,14 @@ module Logic1 where
         case gameState game of
             Menu -> openGame game $ mousePosAsMenuCellCoord mousePos
             Running -> playerTurn game $ mousePosAsCellCoord mousePos
+            RunningB -> playerTurnB game $ mousePosAsCellCoord mousePos
             GameOver _ -> initialGame
     transformGame _ game = game
 
     openGame :: Game ->(Int, Int) -> Game
     openGame game menuCell
         | menuCell == (0, 0) = game { gameState = Running }
-        | menuCell == (0, 1) = game { gameState = Running }
+        | menuCell == (0, 1) = game { gameState = RunningB }
 
 
     horizontalLine game  [row, column, distance]    | board!(row, column) == board!(row, column + distance) && board!(row, column) == board!(row, column + 2*distance) && board!(row, column) == player  = player
@@ -600,16 +696,16 @@ module Logic1 where
                                               stone2 = removeStone2 game
 
     removerHB game          | (takeOtherH game 0) < 8 && threeTakerH game 0 /= (-1,-1)  = game { gameBoard = board // [(threeTakerH game 0, Full Dot)], removeStone2 = stone2 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
-                            | (takeOtherH game 0) < 8  = game { gameBoard = board // [(traverseBoardBotTake game (0,0), Full Dot)], removeStone2 = stone2 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}  
+                            | (takeOtherH game 0) < 8  = game { gameBoard = board // [(traverseBoardBotTake game (0,0), Full Dot)], removeStone2 = stone2 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
                             | otherwise = game
                                         where board = gameBoard game
                                               listH = checkListH game
                                               player = gamePlayer game
                                               stone1 = removeStone1 game
                                               stone2 = removeStone2 game
-    
-    
-    
+
+
+
     removerVB game          | (takeOtherV game 0) < 8 && threeTakerV game 0 /= (-1,-1)  = game { gameBoard = board // [(threeTakerV game 0, Full Dot)], removeStone2 = stone2 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
                             | (takeOtherV game 0) < 8  = game { gameBoard = board // [(traverseBoardBotTake game (0,0), Full Dot)], removeStone2 = stone2 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
                             | otherwise = game
@@ -618,7 +714,7 @@ module Logic1 where
                                               player = gamePlayer game
                                               stone1 = removeStone1 game
                                               stone2 = removeStone2 game
-     
+
     playerSwitcherConfirm game | (takeOther game)  < 8 = game { checker = 0}
                                | otherwise = game { checker = 1}
 
@@ -648,29 +744,46 @@ module Logic1 where
     botMove game (x,y)      | board ! (x,y) == Full Player1 && botMoveThree game (x,y) /= (-1,-1) = game { gameBoard = board // [((x,y),Full Dot), ((botMoveThree game (x,y)), Full Player1)]}
                             | x <= 5 = botMove game (x + 1, y)
                             | x==6 && y <= 5 = botMove game (0, y + 1)
-                            | otherwise = game { gameBoard =  board // [((simpleTraverseBotMove game (0,0)), Full Dot), ((posneighSimpTrv game (simpleTraverseBotMove game (0,0))), Full Player1)]} 
+                            | otherwise = game { gameBoard =  board // [((simpleTraverseBotMove game (0,0)), Full Dot), ((posneighSimpTrv game (simpleTraverseBotMove game (0,0))), Full Player1)]}
                                 where board = gameBoard game
 
-  
+    botMoveThreeFly game (x, y)   | twoInRowCheckerBotMove game ((x, y)) /= (-1,-1) = (x, y)
+                                  | twoInRowCheckerBotMove game ((x, y)) /= (-1,-1) = (x, y)
+                                  | twoInRowCheckerBotMove game ((x, y)) /= (-1,-1) = (x, y)
+                                  | twoInRowCheckerBotMove game ((x, y)) /= (-1,-1) = (x, y)
+                                  | x <= 5 = botMoveThreeFly game (x + 1, y)
+                                  | x == 6 && y <= 5 = botMoveThreeFly game (0, y + 1)
+                                  | otherwise = (-1,-1)
+
+
+    botFlyMove game (x, y)      | board ! (x, y) == Full Player1 && botMoveThreeFly game (0, 0) /= (-1, -1) =
+                                      game { gameBoard = board // [ ((x, y), Full Dot), ((botMoveThreeFly game (0, 0)), Full Player1) ]}
+                                | x <= 5 = botFlyMove game (x + 1, y)
+                                | x == 6 && y <= 5 = botFlyMove game (0, y + 1)
+                                | otherwise =
+                                      game { gameBoard =  board // [((simpleTraverseBotMove game (0,0)), Full Dot), ((posneighSimpTrv game (simpleTraverseBotMove game (0,0))), Full Player1)]}
+                                    where board = gameBoard game
+
+
     traverseBoardBot game (x, y)    | board ! (x,y) /= Full Dot && x <= 5 = traverseBoardBot game (x + 1, y)
                                     | board ! (x,y) /= Full Dot && x == 6 && y <= 5 = traverseBoardBot game (0, y + 1)
                                     | board ! (x,y) /= Full Dot && x == 6 && y == 6 = game
-                                    | otherwise = game { gameBoard = board // [((x,y), Full Player1)], player1Stone = n1 + 1, botCoords = (x,y)}
+                                    | otherwise = game { gameBoard = board // [((x, y), Full Player1)], player1Stone = n1 + 1, botCoords = (x,y)}
                                         where board = gameBoard game
                                               n1  = player1Stone game
-    
+
     threeTakerH game  n      |  n < 8 && (validityH!!n == 0 && board ! ((list!!n)!!0, (list!!n)!!1) == Full Player2)  = ((list!!n)!!0, (list!!n)!!1)
                              |  n == 8 = (-1,-1)
                              | otherwise = threeTakerH game (n + 1)
                                 where board = gameBoard game
-                                      list = gameList game 
+                                      list = gameList game
                                       validityH = checkListH game
 
     threeTakerV game n       |  n < 8 && (validityV!!n == 0 && board ! ((list!!n)!!1, (list!!n)!!0) == Full Player2) = ((list!!n)!!1, (list!!n)!!0)
                              |  n == 8 = (-1,-1)
                              |  otherwise = threeTakerV game (n + 1)
                                     where board = gameBoard game
-                                          list = gameList game 
+                                          list = gameList game
                                           validityV = checkListV game
 
 
@@ -711,7 +824,7 @@ module Logic1 where
                                       | board ! (x,y) == Full Dot && (elem (x,y) oneVCoord) && (isVOneB game (x,y) /= (-1,-1)) = (x,y)
                                       | otherwise = (-1,-1)
                                            where board = gameBoard game
-                                                 cellCoord = playerMovedCoords game 
+                                                 cellCoord = playerMovedCoords game
                                                  n1 = player1Stone game
 
 
