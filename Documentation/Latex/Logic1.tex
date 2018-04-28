@@ -1,0 +1,487 @@
+\haddockmoduleheading{Logic1}
+\label{module:Logic1}
+\haddockbeginheader
+{\haddockverb\begin{verbatim}
+module Logic1 (
+    isCoordCorrect,  twoHCoord,  twoVCoord,  oneHCoord,  oneVCoord, 
+    switchPlayer,  switchPlayer1,  mousePosAsMenuCellCoord, 
+    mousePosAsCellCoord,  checkGameOver,  checkBoardForViable,  traverseBoard, 
+    playerTurn,  playerTurnB,  validCellCoords,  isUpNeighbour, 
+    isDownNeighbour,  isLeftNeighbour,  isRightNeighbour,  setCoords, 
+    checkNeighbour,  isUp,  isDown,  isLeft,  isRight,  isUpB,  isDownB, 
+    isLeftB,  isRightB,  isUpBB,  isDownBB,  isLeftBB,  isRightBB, 
+    isRightTwoB,  isLeftTwoB,  isDownTwoB,  isUpTwoB,  isVOneB,  isHOneB, 
+    transformGame,  openGame,  horizontalLine,  verticleLine, 
+    horizontalLineUnblock,  verticleLineUnblock,  finalHorizontalCheck, 
+    finalVerticalCheck,  finalHorizontalCheckUnblocker, 
+    finalVerticalCheckUnbloccker,  takeOtherH,  takeOtherV,  takeOther, 
+    unblockOtherH,  unblockOtherV,  listUnblockerH,  listUnblockerV, 
+    replaceNth,  removerH,  removerV,  removerHB,  removerVB, 
+    playerSwitcherConfirm,  botMoveThree,  simpleTraverseBotMove, 
+    posneighSimpTrv,  botMove,  botMoveThreeFly,  botFlyMove, 
+    traverseBoardBot,  threeTakerH,  threeTakerV,  traverseBoardBotTake, 
+    traverseBoardBotMove,  twoInRowChecker,  twoInRowCheckerBotMove, 
+    botMoveOnPlayer
+  ) where\end{verbatim}}
+\haddockendheader
+
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+isCoordCorrect\ ::\ (Int,\ Int)\ ->\ Bool
+\end{tabular}]\haddockbegindoc
+The \haddockid{isCoordCorrect} function checks whether the given coordinates are correct or not\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+twoHCoord\ ::\ {\char 91}(Int,\ Int){\char 93}
+\end{tabular}]\haddockbegindoc
+\haddockid{twoHCoord}
+ List of coordinates which have two horizontal neighbours\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+twoVCoord\ ::\ {\char 91}(Int,\ Int){\char 93}
+\end{tabular}]\haddockbegindoc
+\haddockid{twoVCoord}
+ | List of coordinates which have two verticle neighbours\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+oneHCoord\ ::\ {\char 91}(Int,\ Int){\char 93}
+\end{tabular}]\haddockbegindoc
+\haddockid{oneHCoord}
+ List of coordinates which have one horizontal neighbours\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+oneVCoord\ ::\ {\char 91}(Int,\ Int){\char 93}
+\end{tabular}]\haddockbegindoc
+\haddockid{oneVCoord}
+ List of coordinates which have one verticle neighbours\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+switchPlayer\ ::\ Game\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{switchPlayer}
+ Fuction which switches the player according to the value of checker data in the game data set\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+switchPlayer1\ ::\ Game\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddocktt{switchPlaye1}
+ No checker invollved, this function switches the player when called\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+mousePosAsMenuCellCoord\ ::\ (Float,\ Float)\ ->\ (Int,\ Int)
+\end{tabular}]\haddockbegindoc
+\haddockid{mousePosAsMenuCellCoord}
+ This funciton converts the mouse coordinates to menu cell coordinates\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+mousePosAsCellCoord\ ::\ (Float,\ Float)\ ->\ (Int,\ Int)
+\end{tabular}]\haddockbegindoc
+\haddockid{mousePosAsCellCoord}
+ This function converts the mouse coordinates to cell coordinates\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+checkGameOver\ ::\ Game\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{checkGameOver}
+ This funcion implements the gameover condition for the game
+ 1) When either of a player has less than 3 stones left
+ 2) A player does not have a viable move left\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+checkBoardForViable\ ::\ Game\ ->\ Int
+\end{tabular}]\haddockbegindoc
+\haddockid{checkBoardForViable}
+ This function checks the viability of the board, that a player still has a valid move or not\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+traverseBoard\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Int
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+playerTurn\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{playerTurn}
+ This function is for Multi Player deceiding the player turn,
+ This is the main heart of the program this function implements all the required logic for the game\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+playerTurnB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{playerTurnB}
+ This function is for Single Player (when playing against a bot) deceiding the player turn,\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+validCellCoords\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)\ ->\ Bool
+\end{tabular}]\haddockbegindoc
+\haddockid{validCellCoords}
+ This function checks for the validity of the corrdinates when selected to move\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+isUpNeighbour\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)\ ->\ Int
+\end{tabular}]\haddockbegindoc
+Helper functions for checking the valid cell coordinates
+ | \haddockid{isUpNeighbour}
+ This funciton traverse in one direction up down left or right and checks that the given coordinates have free neighbours\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+isDownNeighbour\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)\ ->\ Int
+]
+\item[
+isLeftNeighbour\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)\ ->\ Int
+]
+\item[
+isRightNeighbour\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)\ ->\ Int
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+setCoords\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Int\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{setCoords}
+ Setting the first clicked coords\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+checkNeighbour\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Int
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+isUp\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Int
+\end{tabular}]\haddockbegindoc
+\haddockid{isUp}
+ This function return the required data for movement as the neighbous position or if it is present or not\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+isDown\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Int
+]
+\item[
+isLeft\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Int
+]
+\item[
+isRight\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Int
+]
+\item[
+isUpB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isDownB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isLeftB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isRightB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isUpBB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isDownBB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isLeftBB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isRightBB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+isRightTwoB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+\end{tabular}]\haddockbegindoc
+Function checks that are there and two in a line or not
+ \haddockid{isRightTwoB}, \haddockid{isLeftTwoB}, \haddockid{isDownTwoB}, \haddockid{isUpTwoB}, \haddockid{isVOneB}, \haddockid{isHOneB}\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+isLeftTwoB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isDownTwoB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isUpTwoB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isVOneB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+isHOneB\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+transformGame\ ::\ Event\ ->\ Game\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{transformGame}
+ This function recognise the mouse position and converts it into the cell position where the user clicks
+ transformGame :: Game -> Game\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+openGame\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{openGame}
+ This function is used in displaying the menu\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+horizontalLine\ ::\ Game\ ->\ {\char 91}Int{\char 93}\ ->\ Cell
+\end{tabular}]\haddockbegindoc
+Placing logic ::
+ -> when some one places a stone check for that its movement has created a morris or not
+ -> the horiontal line funcion when mapped creates a list showing that are there any horizontal morris or not
+ -> same is done by verticle
+ -> as the game rules once a morris is formed that norris gets blocked until some change or movement are made in that morris
+ -> so there are take other functions which checks that the morris formed is a new one or the old one
+ -> if the morris is a new one than you give the current player a second chance to take opposite players stone
+ -> this locking and unloccking thing is mainted by the list called checklistH and checklistV
+ -> there are funcions called remover which removes the stone of oppostie layer and blocks the list by which the current player got chance to take
+ -> similarly there are unblock list funciton which unblocks the morris list when there are any changes or movement in the configuration\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+verticleLine\ ::\ Game\ ->\ {\char 91}Int{\char 93}\ ->\ Cell
+]
+\item[
+horizontalLineUnblock\ ::\ Game\ ->\ {\char 91}Int{\char 93}\ ->\ Cell
+]
+\item[
+verticleLineUnblock\ ::\ Game\ ->\ {\char 91}Int{\char 93}\ ->\ Cell
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+finalHorizontalCheck\ ::\ Game\ ->\ {\char 91}Cell{\char 93}
+\end{tabular}]\haddockbegindoc
+Mapping above function to create a list
+ \haddockid{finalHorizontalCheck}, \haddockid{finalVerticalCheck}\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+finalVerticalCheck\ ::\ Game\ ->\ {\char 91}Cell{\char 93}
+]
+\item[
+finalHorizontalCheckUnblocker\ ::\ Game\ ->\ {\char 91}Cell{\char 93}
+]
+\item[
+finalVerticalCheckUnbloccker\ ::\ Game\ ->\ {\char 91}Cell{\char 93}
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+takeOtherH\ ::\ Game\ ->\ Int\ ->\ Int
+\end{tabular}]\haddockbegindoc
+Blocker functions
+ \haddockid{takeOtherH}, \haddockid{takeOtherV}, \haddockid{takeOther}\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+takeOtherV\ ::\ Game\ ->\ Int\ ->\ Int
+]
+\item[
+takeOther\ ::\ Game\ ->\ Int
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+unblockOtherH\ ::\ Game\ ->\ Int\ ->\ Int
+\end{tabular}]\haddockbegindoc
+Unblocker funcitons
+ \haddockid{unblockOtherH}, \haddockid{unblockOtherV}, \haddockid{listUnblockerH}, \haddockid{listUnblockerV}\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+unblockOtherV\ ::\ Game\ ->\ Int\ ->\ Int
+]
+\item[
+listUnblockerH\ ::\ Game\ ->\ Game
+]
+\item[
+listUnblockerV\ ::\ Game\ ->\ Game
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+replaceNth\ ::\ Int\ ->\ {\char 91}Int{\char 93}\ ->\ Int\ ->\ {\char 91}Int{\char 93}
+\end{tabular}]\haddockbegindoc
+\haddockid{replaceNth}
+ Funciton to replace nth postion of list with new value\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+removerH\ ::\ (Int,\ Int)\ ->\ Game\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{removerH}, \haddockid{removerV}
+ Funcitons for removing others stone and blocking the list\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+removerV\ ::\ (Int,\ Int)\ ->\ Game\ ->\ Game
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+removerHB\ ::\ Game\ ->\ Game
+\end{tabular}]\haddockbegindoc
+These are for bot
+ \haddockid{removerHB}, \haddockid{removerVB}\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+removerVB\ ::\ Game\ ->\ Game
+]
+\item[
+playerSwitcherConfirm\ ::\ Game\ ->\ Game
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+botMoveThree\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+\end{tabular}]\haddockbegindoc
+Movement Logic ::
+ -> First we store the corrdinates of the click position by player in a variable
+ -> then we check wheter the coordinates are coorect or not
+ -> if correct we let him to click to other neighbour
+ -> if that are also correct we just move
+ -> bot also follows same logic but it does both step in one
+ -> it first checks if he can make or block a morris
+ -> if not than it tries to block the player\par
+\haddockid{botMoveThree}
+  This Function \haddockid{botMove} to check that this empty postion is where a morris can be formed\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+simpleTraverseBotMove\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+\end{tabular}]\haddockbegindoc
+\haddockid{simpleTraverseBotMove}
+ Find the first position on board for bot for which it can move\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+posneighSimpTrv\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+\end{tabular}]\haddockbegindoc
+\haddockid{posneighSimpTrv}
+ Movement to its neighbour\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+botMove\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{botMove}
+ Main function to handle bot movement\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+botMoveThreeFly\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+\end{tabular}]\haddockbegindoc
+Move When Less than 3 stones
+ -> when a bot or player has less than three stones than it can move its stone to anywhere on board
+ -> so the locgic is implemented here\par
+\haddockid{botMoveThreeFly}
+ Fly to the corrdinate were morris can be formed or blocked\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+botFlyMove\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{botFlyMove}
+ Checking bot fly movement\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+traverseBoardBot\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{traverseBoardBot}
+ Traverse board for simple board movement\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+threeTakerH\ ::\ Game\ ->\ Int\ ->\ (Int,\ Int)
+]
+\item[
+threeTakerV\ ::\ Game\ ->\ Int\ ->\ (Int,\ Int)
+]
+\item[
+traverseBoardBotTake\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\item[
+traverseBoardBotMove\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+twoInRowChecker\ ::\ Game\ ->\ (Int,\ Int)\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{twoInRowChecker}
+ This function checks are there any two same placed stone in a row\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+twoInRowCheckerBotMove\ ::\ Game\ ->\ (Int,\ Int)\ ->\ (Int,\ Int)
+\end{tabular}]\haddockbegindoc
+\haddockid{twoInRowCheckerBotMove}
+ To take action accordin to two stones in a row\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+botMoveOnPlayer\ ::\ Game\ ->\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{botMoveOnPlayer}
+ The function which tries to block the player when no morris can be formed or blocked\par
+
+\end{haddockdesc}

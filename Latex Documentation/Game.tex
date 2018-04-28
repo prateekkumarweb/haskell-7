@@ -1,0 +1,198 @@
+\haddockmoduleheading{Game}
+\label{module:Game}
+\haddockbeginheader
+{\haddockverb\begin{verbatim}
+module Game (
+    Player(Player1, Player2, Dot),  Cell(Empty, Full), 
+    State(Menu, Running, RunningB, GameOver),  Board,  Choice(Multi, Single), 
+    MenuBoard, 
+    Game(Game,
+         gameBoard,
+         menuBoard,
+         gamePlayer,
+         gameState,
+         player1Stone,
+         player2Stone,
+         maxStone1,
+         maxStone2,
+         removeStone1,
+         removeStone2,
+         moveCoords,
+         movedCoordSet,
+         gameList,
+         checkListH,
+         checkListV,
+         checker,
+         playerMovedCoords,
+         botCoords), 
+    n,  listForCheck,  listForHorizontalCheck,  listForVerticalCheck, 
+    screenWidth,  screenHeight,  cellWidth,  cellHeight,  initialGame
+  ) where\end{verbatim}}
+\haddockendheader
+
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+data\ Player
+\end{tabular}]\haddockbegindoc
+\haddockbeginconstrs
+\haddockdecltt{=} & \haddockdecltt{Player1} & \\
+\haddockdecltt{|} & \haddockdecltt{Player2} & \\
+\haddockdecltt{|} & \haddockdecltt{Dot} & \\
+\end{tabulary}\par
+Data fields required
+ | \haddockid{Player} returns which player is on the cell\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+instance\ Eq\ Player\\instance\ Show\ Player
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+data\ Cell
+\end{tabular}]\haddockbegindoc
+\haddockbeginconstrs
+\haddockdecltt{=} & \haddockdecltt{Empty} & \\
+\haddockdecltt{|} & \haddockdecltt{Full Player} & \\
+\end{tabulary}\par
+\haddockid{Cell} shows the state of the cell\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+instance\ Eq\ Cell\\instance\ Show\ Cell
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+data\ State
+\end{tabular}]\haddockbegindoc
+\haddockbeginconstrs
+\haddockdecltt{=} & \haddockdecltt{Menu} & \\
+\haddockdecltt{|} & \haddockdecltt{Running} & \\
+\haddockdecltt{|} & \haddockdecltt{RunningB} & \\
+\haddockdecltt{|} & \haddockdecltt{GameOver (Maybe Player)} & \\
+\end{tabulary}\par
+\haddockid{State} is the state of teh game\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+instance\ Eq\ State\\instance\ Show\ State
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+type\ Board\ =\ Array\ (Int,\ Int)\ Cell
+\end{tabular}]\haddockbegindoc
+\haddockid{Board} is for storing the 2-D array\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+data\ Choice
+\end{tabular}]\haddockbegindoc
+\haddockbeginconstrs
+\haddockdecltt{=} & \haddockdecltt{Multi} & \\
+\haddockdecltt{|} & \haddockdecltt{Single} & \\
+\end{tabulary}\par
+\haddockid{Choice} is the choice the user selects in the menu\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+instance\ Eq\ Choice\\instance\ Show\ Choice
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+type\ MenuBoard\ =\ Array\ (Int,\ Int)\ Choice
+\end{tabular}]\haddockbegindoc
+\haddockid{MenuBoard} is the array to represent the menu board\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+data\ Game
+\end{tabular}]\haddockbegindoc
+\haddockbeginconstrs
+\haddockdecltt{=} & \haddockdecltt{Game} & \\
+                    \haddockdecltt{gameBoard :: Board} &
+                    \haddockdecltt{menuBoard :: MenuBoard} &
+                    \haddockdecltt{gamePlayer :: Player} &
+                    \haddockdecltt{gameState :: State} &
+                    \haddockdecltt{player1Stone :: Int} &
+                    \haddockdecltt{player2Stone :: Int} &
+                    \haddockdecltt{maxStone1 :: Int} &
+                    \haddockdecltt{maxStone2 :: Int} &
+                    \haddockdecltt{removeStone1 :: Int} &
+                    \haddockdecltt{removeStone2 :: Int} &
+                    \haddockdecltt{moveCoords :: (Int, Int)} &
+                    \haddockdecltt{movedCoordSet :: Int} &
+                    \haddockdecltt{gameList :: [[Int]]} &
+                    \haddockdecltt{checkListH :: [Int]} &
+                    \haddockdecltt{checkListV :: [Int]} &
+                    \haddockdecltt{checker :: Int} &
+                    \haddockdecltt{playerMovedCoords :: (Int, Int)} &
+                    \haddockdecltt{botCoords :: (Int, Int)} &
+\end{tabulary}\par
+\haddockid{Game} returns the current state of teh game witn all it's member variables\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+instance\ Eq\ Game\\instance\ Show\ Game
+\end{tabular}]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+n\ ::\ Int
+\end{tabular}]\haddockbegindoc
+\haddockid{n} is the size of the grid\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+listForCheck\ ::\ {\char 91}{\char 91}Int{\char 93}{\char 93}
+\end{tabular}]\haddockbegindoc
+This are the list required for checking when a player forms a morris
+ \haddockid{listForCheck}, \haddockid{listForHorizontalCheck}, \haddockid{listForVerticalCheck}\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+listForHorizontalCheck\ ::\ {\char 91}Int{\char 93}
+]
+\item[
+listForVerticalCheck\ ::\ {\char 91}Int{\char 93}
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+screenWidth\ ::\ Int
+\end{tabular}]\haddockbegindoc
+Screen window discription
+ screenWidth = 644
+ screenHeight = 644\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+screenHeight\ ::\ Int
+]
+\item[
+cellWidth\ ::\ Float
+]
+\item[
+cellHeight\ ::\ Float
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+initialGame\ ::\ Game
+\end{tabular}]\haddockbegindoc
+\haddockid{initialGame}
+ Initial constructor for game\par
+
+\end{haddockdesc}
