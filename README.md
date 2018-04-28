@@ -29,9 +29,7 @@ Gloss is a graphics library used for drawing simple vector based graphics. It us
 
 ## Screenshots of the game
 ![Screenshot](https://github.com/IITH-SBJoshi/haskell-7/blob/CS16BTECH11032/Images/MenuScreen.png)
-**Menu Screen** <br />
 ![Screenshot](https://github.com/IITH-SBJoshi/haskell-7/blob/CS16BTECH11032/Images/GameScreen.png)
-**Game Screen** <br />
 
 ## How to run
 **Note :** Instead of installing gloss globally, we’re going to create a sandbox. A sandbox is a directory in which cabal will (for the most part) ignore the global packages, and will instead install packages directly to that directory.
