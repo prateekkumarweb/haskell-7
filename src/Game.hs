@@ -2,18 +2,24 @@ module Game where
 
 
   import Data.Array
-  
-  --data fields required
+
+  -- | Data fields required
+  -- | 'Player' returns which player is on the cell
   data Player = Player1 | Player2 | Dot deriving(Eq, Show)
+  -- | 'Cell' shows the state of the cell
   data Cell = Empty | Full Player deriving (Eq, Show)
+  -- | 'State' is the state of teh game
   data State = Menu | Running | RunningB | GameOver (Maybe Player) deriving (Eq, Show)
-  
+
+  -- | 'Board' is for storing the 2-D array
   type Board = Array (Int, Int) Cell
-  
+
+  -- | 'Choice' is the choice the user selects in the menu
   data Choice = Multi | Single deriving(Eq, Show)
+  -- | 'MenuBoard' is the array to represent the menu board
   type MenuBoard = Array (Int, Int) Choice
-  
-  
+
+  -- | 'Game' returns the current state of teh game witn all it's member variables
   data Game  = Game { gameBoard :: Board,
                       menuBoard :: MenuBoard,
                       gamePlayer :: Player,
@@ -33,30 +39,35 @@ module Game where
                       playerMovedCoords :: (Int, Int),
                       botCoords :: (Int, Int)
                     } deriving(Eq, Show)
-  
-  
+
+
   n :: Int
+  -- | 'n' is the size of the grid
   n = 7
-  
-  -- this are the list required for checking when a player forms a morris
+
+  -- | This are the list required for checking when a player forms a morris
+  -- 'listForCheck', 'listForHorizontalCheck', 'listForVerticalCheck'
   listForCheck = [[0,0,3], [1,1,2], [2,2,1], [3,0,1], [3,4,1], [4,2,1], [5,1,2], [6,0,3]]
   listForHorizontalCheck = [1,1,1,1,1,1,1,1]
   listForVerticalCheck = [1,1,1,1,1,1,1,1]
-  
-  --screen window discription
+
+  -- | Screen window discription
+  -- screenWidth = 644
+  -- screenHeight = 644
   screenWidth :: Int
   screenWidth = 644
-  
+
   screenHeight :: Int
   screenHeight = 644
-  
+
   cellWidth :: Float
   cellWidth = fromIntegral screenWidth / fromIntegral n
-  
+
   cellHeight :: Float
   cellHeight = fromIntegral screenHeight / fromIntegral n
-  
-  --initial constructor for game
+
+  -- | 'initialGame'
+  -- Initial constructor for game
   initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cycle [Empty])) // [ ((0, 0), Full Dot),
                                                                                                     ((0, 3), Full Dot),
                                                                                                     ((0, 6), Full Dot),
