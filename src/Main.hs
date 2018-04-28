@@ -5,7 +5,7 @@ import Graphics.Gloss.Data.Color
 
 import Game
 import Rendering
-import Logic
+import Logic1
 
 window :: Display
 window = InWindow "Nine Men Morris" (screenWidth, screenHeight) (100, 100)
