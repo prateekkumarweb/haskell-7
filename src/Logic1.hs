@@ -212,7 +212,7 @@ module Logic1 where
               $ switchPlayer
               $ playerSwitcherConfirm
             --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
-              $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)], playerMovedCoords = cellCoord }
+              $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)], playerMovedCoords = cellCoord, moveCoords = (-1, -1), movedCoordSet = 0 }
         -- Fly Logic when 3 stones are left
         | isCoordCorrect cellCoord && board ! cellCoord == Full Player2 && player == Player2 && (removeStone2 game) <= 3 && (movedCoordSet game) ==  0 && (takeOther game) >= 8 =
              -- Store the current clicked coordinates (only if atleast one neighbour is a 'dot')
