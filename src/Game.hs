@@ -40,15 +40,19 @@ module Game where
                       botCoords :: (Int, Int)
                     } deriving(Eq, Show)
 
-
-  n :: Int
   -- | 'n' is the size of the grid
+  n :: Int
   n = 7
 
   -- | This are the list required for checking when a player forms a morris
   -- 'listForCheck', 'listForHorizontalCheck', 'listForVerticalCheck'
+  listForCheck :: [[Int]]
   listForCheck = [[0,0,3], [1,1,2], [2,2,1], [3,0,1], [3,4,1], [4,2,1], [5,1,2], [6,0,3]]
+
+  listForHorizontalCheck :: [Int]
   listForHorizontalCheck = [1,1,1,1,1,1,1,1]
+
+  listForVerticalCheck :: [Int]
   listForVerticalCheck = [1,1,1,1,1,1,1,1]
 
   -- | Screen window discription
@@ -68,6 +72,7 @@ module Game where
 
   -- | 'initialGame'
   -- Initial constructor for game
+  initialGame :: Game
   initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cycle [Empty])) // [ ((0, 0), Full Dot),
                                                                                                     ((0, 3), Full Dot),
                                                                                                     ((0, 6), Full Dot),

@@ -42,6 +42,7 @@ menuBoardLine :: Picture
 menuBoardLine =
               pictures [ line [(322.0, 644.0), (322.0, 0.0)] ]
 
+rectangleMenuBlack :: Picture
 rectangleMenuBlack =
               pictures [ translate x y $ rectangleSolid 644.0 644.0 ]
                   where x = 0.0
@@ -55,6 +56,7 @@ tileRenderMulti = Text "Multi Player"
 tileRenderSingle :: Picture
 tileRenderSingle =  Text "Single Player"
 
+boardMenuPicture :: Game -> MenuBoard -> Picture
 boardMenuPicture game board =
           pictures [  color blackcolor $ menuBoardLine
                       , color blackcolor $ rectangleMenuBlack
@@ -62,6 +64,7 @@ boardMenuPicture game board =
                       , color blackcolor $ tileRenderSingleCell board ]
 
 -- | 'boardAsRunningPicture' renders the picture depending on the board provided
+boardAsRunningPicture :: Game -> Board -> Picture
 boardAsRunningPicture game board
     | player == Player1 =
           pictures [ color gridLightPlayer1 $ dotCellsOfBoard board
@@ -78,10 +81,12 @@ boardAsRunningPicture game board
         where player = gamePlayer game
 
 -- | 'snapPictureToCell' places the picture back to the cell
+snapPictureToCell :: Picture -> (Int, Int) -> Picture
 snapPictureToCell picture (row, column) = translate x y picture
     where x = fromIntegral column * cellWidth + cellWidth * 0.5
           y = fromIntegral row * cellHeight + cellHeight * 0.5
 
+snapPictureToMenuCell :: Picture -> (Float, Float) -> Picture
 snapPictureToMenuCell picture (row, column) = translate x y picture
     where x = fromIntegral screenWidth * (column * 0.5 + 0.09)
           y = fromIntegral screenHeight * (row + 0.5)
@@ -110,14 +115,17 @@ cellsOfBoard board cell cellPicture =
     $ assocs board
 
 -- | 'menuCellsBoard' is in accordance to the 'cellsOfBoard' function
+menuCellsBoard :: MenuBoard -> Choice -> Picture -> Picture
 menuCellsBoard board choice menuPicture =
     pictures
     $ map (snapPictureToMenuCell menuPicture . fst)
     $ filter (\(_, e) -> e == choice)
     $ [((0, 0), Multi), ((0, 1), Single)]
 
+tileRenderMultiCell :: MenuBoard -> Picture
 tileRenderMultiCell board = menuCellsBoard board Multi $ scale 0.25 0.25 tileRenderMulti
 
+tileRenderSingleCell :: MenuBoard -> Picture
 tileRenderSingleCell board = menuCellsBoard board Single $ scale 0.25 0.25 tileRenderSingle
 
 -- | 'aCellsOfBoard' returns the cells where the cells are of 'a' type (Full Player1)

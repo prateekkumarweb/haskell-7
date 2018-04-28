@@ -7,6 +7,7 @@ module Logic1 where
     import Graphics.Gloss.Interface.Pure.Game
 
     -- | The 'isCoordCorrect' function checks whether the given coordinates are correct or not
+    isCoordCorrect :: (Int, Int) -> Bool
     isCoordCorrect (x, y) = elem (x, y) [ (0, 0),
                                           (0, 3),
                                           (0, 6),
@@ -34,6 +35,7 @@ module Logic1 where
 
     -- | 'twoHCoord'
     -- List of coordinates which have two horizontal neighbours
+    twoHCoord :: [(Int, Int)]
     twoHCoord = [(0,0),
                  (3,0),
                  (6,0),
@@ -53,6 +55,7 @@ module Logic1 where
 
     -- | 'twoVCoord'
     -- | List of coordinates which have two verticle neighbours
+    twoVCoord :: [(Int, Int)]
     twoVCoord = [(0,0),
                  (0,3),
                  (0,6),
@@ -72,6 +75,7 @@ module Logic1 where
 
     -- | 'oneHCoord'
     -- List of coordinates which have one horizontal neighbours
+    oneHCoord :: [(Int, Int)]
     oneHCoord = [(0,3),
                  (1,3),
                  (2,3),
@@ -83,6 +87,7 @@ module Logic1 where
 
     -- | 'oneVCoord'
     -- List of coordinates which have one verticle neighbours
+    oneVCoord :: [(Int, Int)]
     oneVCoord = [(3,0),
                  (3,1),
                  (3,2),
@@ -95,6 +100,7 @@ module Logic1 where
 
     -- | 'switchPlayer'
     -- Fuction which switches the player according to the value of checker data in the game data set
+    switchPlayer :: Game -> Game
     switchPlayer game
         | checker game == 1 && gamePlayer game == Player1 = game { gamePlayer = Player2 }
         | checker game == 1 && gamePlayer game == Player2 = game { gamePlayer = Player1 }
@@ -102,6 +108,7 @@ module Logic1 where
 
     -- | 'switchPlaye1'
     -- No checker invollved, this function switches the player when called
+    switchPlayer1 :: Game -> Game
     switchPlayer1 game =
         case gamePlayer game of
             Player1 -> game { gamePlayer = Player2 }
@@ -109,6 +116,7 @@ module Logic1 where
 
     -- | 'mousePosAsMenuCellCoord'
     -- This funciton converts the mouse coordinates to menu cell coordinates
+    mousePosAsMenuCellCoord :: (Float, Float) -> (Int, Int)
     mousePosAsMenuCellCoord (x, y) = ( floor((y + (fromIntegral screenHeight * 0.5)) / (fromIntegral screenHeight))
                                    , floor((x + (fromIntegral screenWidth * 0.5)) / (fromIntegral screenWidth / 2))
                                    )
@@ -120,22 +128,16 @@ module Logic1 where
                                  , floor((x + (fromIntegral screenWidth * 0.5)) / cellWidth)
                                  )
 
-    --'countCells'
-    -- This funciton returns the count of the number of cells with the 'cell' as an element
-    countCells :: Cell -> Board -> Int
-    countCells cell = length . filter ((==) cell) . elems
-
     -- | 'checkGameOver'
     -- This funcion implements the gameover condition for the game
     -- 1) When either of a player has less than 3 stones left
     -- 2) A player does not have a viable move left
+    checkGameOver :: Game -> Game
     checkGameOver game
         | p1 <= 2 =
             game { gameState = GameOver $ Just Player2 }
         | p2 <= 2 =
             game { gameState = GameOver $ Just Player1 }
-        | countCells cell board == 0 =
-            game { gameState = GameOver Nothing }
         -- 'checkBoardForViable game player' returns 0 if no viable move for 'player' in that game state
         | checkBoardForViable game == 0 && player == Player1 && (player1Stone game) > (maxStone1 game)  =
             game { gameState = GameOver $ Just Player2 }
@@ -150,20 +152,22 @@ module Logic1 where
 
     -- | 'checkBoardForViable'
     -- This function checks the viability of the board, that a player still has a valid move or not
+    checkBoardForViable :: Game -> Int
     checkBoardForViable game
         | traverseBoard game (0, 0) == 0 =
-            -- | It returns 0 if there is no viable move in the board for that player
+            -- It returns 0 if there is no viable move in the board for that player
             0
         | otherwise = 1
-            -- | Otherwise it returns 1
+            --  Otherwise it returns 1
 
 
     -- 'traverseBoard'
     -- This funciton is called by the check board for checking for any viable moves left or not
     -- This function just simply scans the whole board and checks for the possible moves for the current player
+    traverseBoard :: Game -> (Int, Int) -> Int
     traverseBoard game (x, y)
         | checkNeighbour game (x, y) == 0 && x <= 5 =
-            -- | checkNeighbour game (x, y) == 0, Means no viable move for player at (x, y)
+            --  checkNeighbour game (x, y) == 0, Means no viable move for player at (x, y)
             traverseBoard game (x + 1, y)
         | checkNeighbour game (x, y) == 1 && Full player /= board ! (x, y) && x <= 5 =
             traverseBoard game (x + 1, y)
@@ -274,7 +278,7 @@ module Logic1 where
 
     -- | 'playerTurnB'
     -- This function is for Single Player (when playing against a bot) deceiding the player turn,
-    playerTurnB :: Game ->(Int, Int) -> Game
+    playerTurnB :: Game -> (Int, Int) -> Game
     playerTurnB game cellCoord
         -- If player1Stone <= maxStone1 and chance = player1
         -- then player1Stone++ and replace cellCoord with Full player
@@ -357,6 +361,7 @@ module Logic1 where
 
     -- | 'validCellCoords'
     -- This function checks for the validity of the corrdinates when selected to move
+    validCellCoords :: Game -> (Int, Int) -> (Int, Int) -> Bool
     validCellCoords game (x, y) mCoords
         | isUpNeighbour game (x, y) mCoords == 1 =
             True
@@ -372,6 +377,7 @@ module Logic1 where
     -- | Helper functions for checking the valid cell coordinates
     -- | 'isUpNeighbour'
     -- This funciton traverse in one direction up down left or right and checks that the given coordinates have free neighbours
+    isUpNeighbour :: Game -> (Int, Int) -> (Int, Int) -> Int
     isUpNeighbour game (x, y) mCoords
         | x <= 5 && board ! (x + 1, y) == Empty =
             isUpNeighbour game (x + 1, y) mCoords
@@ -380,6 +386,7 @@ module Logic1 where
         | otherwise = 0
             where board = gameBoard game
 
+    isDownNeighbour :: Game -> (Int, Int) -> (Int, Int) -> Int
     isDownNeighbour game (x, y) mCoords
         | x >= 1 && board ! (x - 1, y) == Empty =
             isDownNeighbour game (x - 1, y) mCoords
@@ -388,6 +395,7 @@ module Logic1 where
         | otherwise = 0
             where board = gameBoard game
 
+    isLeftNeighbour :: Game -> (Int, Int) -> (Int, Int) -> Int
     isLeftNeighbour game (x, y) mCoords
         | y >= 1 && board ! (x, y - 1) == Empty =
             isLeftNeighbour game (x, y - 1) mCoords
@@ -396,6 +404,7 @@ module Logic1 where
         | otherwise = 0
             where board = gameBoard game
 
+    isRightNeighbour :: Game -> (Int, Int) -> (Int, Int) -> Int
     isRightNeighbour game (x, y) mCoords
         | y <= 5 && board ! (x, y + 1) == Empty =
             isRightNeighbour game (x, y + 1) mCoords
@@ -406,11 +415,13 @@ module Logic1 where
 
     -- | 'setCoords'
     -- Setting the first clicked coords
+    setCoords :: Game -> (Int, Int) -> Int -> Game
     setCoords game cellCoord checker
         | checker == 1 =
             game { moveCoords = cellCoord, movedCoordSet = 1 }
         | otherwise = game
 
+    checkNeighbour :: Game -> (Int, Int) -> Int
     checkNeighbour game cellCoord
         | isUp game (x, y) == 1 =
             1
@@ -426,6 +437,7 @@ module Logic1 where
 
     -- | 'isUp'
     -- This function return the required data for movement as the neighbous position or if it is present or not
+    isUp :: Game -> (Int, Int) -> Int
     isUp game (x, y)
         | x <= 5 && board ! (x + 1, y) == Empty =
             isUp game (x + 1, y)
@@ -434,6 +446,7 @@ module Logic1 where
         | otherwise = 0
             where board = gameBoard game
 
+    isDown :: Game -> (Int, Int) -> Int
     isDown game (x, y)
         | x >= 1 && board ! (x - 1, y) == Empty =
             isDown game (x - 1, y)
@@ -442,6 +455,7 @@ module Logic1 where
         | otherwise = 0
             where board = gameBoard game
 
+    isLeft :: Game -> (Int, Int) -> Int
     isLeft game (x, y)
         | y >= 1 && board ! (x, y - 1) == Empty =
             isLeft game (x, y - 1)
@@ -450,6 +464,7 @@ module Logic1 where
         | otherwise = 0
             where board = gameBoard game
 
+    isRight :: Game -> (Int, Int) -> Int
     isRight game (x, y)
         | y <= 5 && board ! (x, y + 1) == Empty =
             isRight game (x, y + 1)
@@ -458,14 +473,16 @@ module Logic1 where
         | otherwise = 0
             where board = gameBoard game
    ---------------------------------------------------
+    isUpB :: Game -> (Int, Int) -> (Int, Int)
     isUpB game (x, y)
      | x <= 5 && board ! (x + 1, y) == Empty =
          isUpB game (x + 1, y)
      | x <= 5 && board ! (x + 1, y) == Full Dot =
-         (x+1, y)
-     | otherwise = (-1,-1)
+         (x + 1, y)
+     | otherwise = (-1, -1)
          where board = gameBoard game
 
+    isDownB :: Game -> (Int, Int) -> (Int, Int)
     isDownB game (x, y)
         | x >= 1 && board ! (x - 1, y) == Empty =
             isDownB game (x - 1, y)
@@ -474,6 +491,7 @@ module Logic1 where
         | otherwise = (-1,-1)
             where board = gameBoard game
 
+    isLeftB :: Game -> (Int, Int) -> (Int, Int)
     isLeftB game (x, y)
         | y >= 1 && board ! (x, y - 1) == Empty =
             isLeftB game (x, y - 1)
@@ -482,6 +500,7 @@ module Logic1 where
         | otherwise = (-1,-1)
             where board = gameBoard game
 
+    isRightB :: Game -> (Int, Int) -> (Int, Int)
     isRightB game (x, y)
         | y <= 5 && board ! (x, y + 1) == Empty =
             isRightB game (x, y + 1)
@@ -491,61 +510,70 @@ module Logic1 where
             where board = gameBoard game
 
     -------------------------------------------------------------
+    isUpBB :: Game -> (Int, Int) -> (Int, Int)
     isUpBB game (x, y)
         | x <= 5 && board ! (x + 1, y) == Empty =
             isUpBB game (x + 1, y)
         | x <= 5 && board ! (x + 1, y) /= Full Dot =
-            (x+1, y)
-        | otherwise = (-1,-1)
+            (x + 1, y)
+        | otherwise = (-1, -1)
             where board = gameBoard game
 
+    isDownBB :: Game -> (Int, Int) -> (Int, Int)
     isDownBB game (x, y)
         | x >= 1 && board ! (x - 1, y) == Empty =
             isDownBB game (x - 1, y)
         | x >= 1 && board ! (x - 1, y) /= Full Dot =
-            (x-1, y)
-        | otherwise = (-1,-1)
+            (x - 1, y)
+        | otherwise = (-1, -1)
             where board = gameBoard game
 
+    isLeftBB :: Game -> (Int, Int) -> (Int, Int)
     isLeftBB game (x, y)
         | y >= 1 && board ! (x, y - 1) == Empty =
             isLeftBB game (x, y - 1)
         | y >= 1 && board ! (x, y - 1) /= Full Dot =
             (x, y - 1)
-        | otherwise = (-1,-1)
+        | otherwise = (-1, -1)
             where board = gameBoard game
 
+    isRightBB :: Game -> (Int, Int) -> (Int, Int)
     isRightBB game (x, y)
         | y <= 5 && board ! (x, y + 1) == Empty =
             isRightBB game (x, y + 1)
         | y <= 5 && board ! (x, y + 1) /= Full Dot =
             (x, y + 1)
-        | otherwise = (-1,-1)
+        | otherwise = (-1, -1)
             where board = gameBoard game
 
     -- | Function checks that are there and two in a line or not
     -- 'isRightTwoB', 'isLeftTwoB', 'isDownTwoB', 'isUpTwoB', 'isVOneB', 'isHOneB'
-
+    isRightTwoB :: Game -> (Int, Int) -> (Int, Int)
     isRightTwoB game (x,y) | isRightBB game (x,y) /= (-1,-1) && isRightBB game (isRightBB game (x,y)) /= (-1,-1) && board ! isRightBB game (x,y) == board ! isRightBB game (isRightBB game (x,y)) = (x,y)
                            | otherwise = (-1,-1)
                                 where board = gameBoard game
 
+    isLeftTwoB :: Game -> (Int, Int) -> (Int, Int)
     isLeftTwoB game (x,y)  | isLeftBB game (x,y) /= (-1,-1) && isLeftBB game (isLeftBB game (x,y)) /= (-1,-1) && board ! isLeftBB game (x,y) == board ! isLeftBB game (isLeftBB game (x,y)) = (x,y)
                            | otherwise = (-1,-1)
                                 where board = gameBoard game
 
+    isDownTwoB :: Game -> (Int, Int) -> (Int, Int)
     isDownTwoB game (x,y)  | isDownBB game (x,y) /= (-1,-1) && isDownBB game (isDownBB game (x,y)) /= (-1,-1) && board ! isDownBB game (x,y) == board ! isDownBB game (isDownBB game (x,y)) = (x,y)
                            | otherwise = (-1,-1)
                                 where board = gameBoard game
 
+    isUpTwoB :: Game -> (Int, Int) -> (Int, Int)
     isUpTwoB game (x,y)    | isUpBB game (x,y) /= (-1,-1) && isUpBB game (isUpBB game (x,y)) /= (-1,-1) && board ! isUpBB game (x,y) == board ! isUpBB game (isUpBB game (x,y)) = (x,y)
                            | otherwise = (-1,-1)
                                 where board = gameBoard game
 
+    isVOneB :: Game -> (Int, Int) -> (Int, Int)
     isVOneB game (x,y)     | isUpBB game (x,y) /= (-1,-1) && isDownBB game (x,y) /= (-1,-1) && board ! isUpBB game (x,y) == board ! isDownBB game (x,y) = (x,y)
                            | otherwise = (-1,-1)
                                 where board = gameBoard game
 
+    isHOneB :: Game -> (Int, Int) -> (Int, Int)
     isHOneB game (x,y)     | isRightBB game (x,y) /= (-1,-1) && isLeftBB game (x,y) /= (-1,-1) && board ! isRightBB game (x,y) == board ! isLeftBB game (x,y) = (x,y)
                            | otherwise = (-1,-1)
                                 where board = gameBoard game
@@ -553,6 +581,7 @@ module Logic1 where
 
     -- | 'transformGame'
     -- This function recognise the mouse position and converts it into the cell position where the user clicks
+    -- transformGame :: Game -> Game
     transformGame (EventKey (MouseButton LeftButton) Up _ mousePos) game =
         case gameState game of
             Menu -> openGame game $ mousePosAsMenuCellCoord mousePos
@@ -580,37 +609,48 @@ module Logic1 where
         -- -> there are funcions called remover which removes the stone of oppostie layer and blocks the list by which the current player got chance to take
         -- -> similarly there are unblock list funciton which unblocks the morris list when there are any changes or movement in the configuration
 
+    horizontalLine :: Game -> [Int] -> Cell
     horizontalLine game  [row, column, distance]    | board!(row, column) == board!(row, column + distance) && board!(row, column) == board!(row, column + 2*distance) && board!(row, column) == player  = player
-                                                              | otherwise = Full Dot
+                                                    | otherwise = Full Dot
                                                                     where  board = gameBoard game
                                                                            player = Full $ gamePlayer game
 
+    verticleLine :: Game -> [Int] -> Cell
     verticleLine game  [column, row, distance]      | board!(row, column) == board!(row + distance, column) && board!(row, column) == board!(row + 2*distance, column) && board!(row, column) == player  = player
-                                                              | otherwise = Full Dot
+                                                    | otherwise = Full Dot
                                                                     where  board = gameBoard game
                                                                            player = Full $ gamePlayer game
 
+    horizontalLineUnblock :: Game -> [Int] -> Cell
     horizontalLineUnblock game  [row, column, distance]    | (board!(row, column) /= board!(row, column + distance) || board!(row, column) /= board!(row, column + 2*distance))   = Full Dot
-                                                              | otherwise = player
+                                                           | otherwise = player
                                                                     where  board = gameBoard game
                                                                            player = Full $ gamePlayer game
 
+    verticleLineUnblock :: Game -> [Int] -> Cell
     verticleLineUnblock game  [column, row, distance]      | (board!(row, column) /= board!(row + distance, column) || board!(row, column) /= board!(row + 2*distance, column))  = Full Dot
-                                                              | otherwise = player
+                                                           | otherwise = player
                                                                     where  board = gameBoard game
                                                                            player = Full $ gamePlayer game
 
 
     -- | Mapping above function to create a list
     -- 'finalHorizontalCheck', 'finalVerticalCheck'
+    finalHorizontalCheck :: Game -> [Cell]
     finalHorizontalCheck game  = map (horizontalLine game) $ gameList game
+
+    finalVerticalCheck :: Game -> [Cell]
     finalVerticalCheck game = map (verticleLine game) $ gameList game
 
+    finalHorizontalCheckUnblocker :: Game -> [Cell]
     finalHorizontalCheckUnblocker game  = map (horizontalLineUnblock game) $ gameList game
+
+    finalVerticalCheckUnbloccker :: Game -> [Cell]
     finalVerticalCheckUnbloccker game = map (verticleLineUnblock game) $ gameList game
 
     -- | Blocker functions
     -- 'takeOtherH', 'takeOtherV', 'takeOther'
+    takeOtherH :: Game -> Int -> Int
     takeOtherH game n       | n < 8 && (finalHorizontalCheck game)!!n == player && validityH!!n == 1 = n
                             | n == 8 = 8
                             | otherwise =  takeOtherH game (n + 1)
@@ -618,6 +658,7 @@ module Logic1 where
                                       player = Full $ gamePlayer game
                                       validityH = checkListH game
 
+    takeOtherV :: Game -> Int -> Int
     takeOtherV game n       | n < 8 && ((finalVerticalCheck game)!!n == player) && validityV!!n == 1 = n
                             | n == 8 = 8
                             | otherwise =  takeOtherV game (n + 1)
@@ -625,34 +666,40 @@ module Logic1 where
                                       player = Full $ gamePlayer game
                                       validityV = checkListV game
 
+    takeOther :: Game -> Int
     takeOther game         |  (((takeOtherH game 0) < 8) || ((takeOtherV game 0) < 8)) = 1
-                            | otherwise = 8
+                           | otherwise = 8
 
 
     -- | Unblocker funcitons
     -- 'unblockOtherH', 'unblockOtherV', 'listUnblockerH', 'listUnblockerV'
+    unblockOtherH :: Game -> Int -> Int
     unblockOtherH game k    | k < 8 && ((finalHorizontalCheckUnblocker game)!!k == Full Dot) && validityH!!k == 0 = k
                             | k == 8 = 8
                             | otherwise =  unblockOtherH game (k + 1)
                                 where board = gameBoard game
                                       validityH = checkListH game
 
-    unblockOtherV game k   | k < 8 && ((finalVerticalCheckUnbloccker game)!!k == Full Dot) && validityV!!k == 0 = k
+    unblockOtherV :: Game -> Int -> Int
+    unblockOtherV game k    | k < 8 && ((finalVerticalCheckUnbloccker game)!!k == Full Dot) && validityV!!k == 0 = k
                             | k == 8 = 8
                             | otherwise =  unblockOtherV game (k + 1)
                                 where board = gameBoard game
                                       validityV = checkListV game
 
+    listUnblockerH :: Game -> Game
     listUnblockerH  game | (unblockOtherH game 0) < 8 = game { checkListH = (replaceNth 1 validityH $ unblockOtherH game 0)}
                          | otherwise = game
                             where validityH = checkListH game
 
+    listUnblockerV :: Game -> Game
     listUnblockerV  game | (unblockOtherV game 0) < 8 = game { checkListV = (replaceNth 1 validityV $ unblockOtherV game 0)}
                          | otherwise = game
                             where validityV = checkListV game
 
     -- | 'replaceNth'
     -- Funciton to replace nth postion of list with new value
+    replaceNth :: Int -> [Int] -> Int -> [Int]
     replaceNth newVal (x:xs) n
                             | n == 0 = newVal:xs
                             | otherwise = x:replaceNth newVal xs (n - 1)
@@ -660,6 +707,7 @@ module Logic1 where
 
     -- | 'removerH', 'removerV'
     -- Funcitons for removing others stone and blocking the list
+    removerH :: (Int, Int) -> Game -> Game
     removerH cellCoord game          | (takeOtherH game 0) < 8 && player == Player1  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone2 = stone2 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
                                      | (takeOtherH game 0) < 8 && player == Player2  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone1 = stone1 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
                                      | otherwise = game
@@ -670,7 +718,7 @@ module Logic1 where
                                               stone2 = removeStone2 game
 
 
-
+    removerV :: (Int, Int) -> Game -> Game
     removerV cellCoord game          | (takeOtherV game 0) < 8 && player == Player1  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone2 = stone2 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
                                      | (takeOtherV game 0) < 8 && player == Player2  = game { gameBoard = board // [(cellCoord, Full Dot)], removeStone1 = stone1 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
                                      | otherwise = game
@@ -681,6 +729,7 @@ module Logic1 where
                                               stone2 = removeStone2 game
     -- | These are for bot
     -- 'removerHB', 'removerVB'
+    removerHB :: Game -> Game
     removerHB game          | (takeOtherH game 0) < 8 && threeTakerH game 0 /= (-1,-1)  = game { gameBoard = board // [(threeTakerH game 0, Full Dot)], removeStone2 = stone2 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
                             | (takeOtherH game 0) < 8  = game { gameBoard = board // [(traverseBoardBotTake game (0,0), Full Dot)], removeStone2 = stone2 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
                             | otherwise = game
@@ -691,7 +740,7 @@ module Logic1 where
                                               stone2 = removeStone2 game
 
 
-
+    removerVB :: Game -> Game
     removerVB game          | (takeOtherV game 0) < 8 && threeTakerV game 0 /= (-1,-1)  = game { gameBoard = board // [(threeTakerV game 0, Full Dot)], removeStone2 = stone2 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
                             | (takeOtherV game 0) < 8  = game { gameBoard = board // [(traverseBoardBotTake game (0,0), Full Dot)], removeStone2 = stone2 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
                             | otherwise = game
@@ -701,6 +750,7 @@ module Logic1 where
                                               stone1 = removeStone1 game
                                               stone2 = removeStone2 game
 
+    playerSwitcherConfirm :: Game -> Game
     playerSwitcherConfirm game | (takeOther game)  < 8 = game { checker = 0}
                                | otherwise = game { checker = 1}
 
@@ -715,8 +765,9 @@ module Logic1 where
 
 
     -- | 'botMoveThree'
-    -- Function to check that this empty postion is where a morris can be formed
-    botMoveThree game (x,y)     | isRightB game (x,y) /= (-1,-1) && twoInRowCheckerBotMove game (isRightB game (x,y)) /= (-1,-1) = isRightB game (x,y)
+    --  This Function 'botMove' to check that this empty postion is where a morris can be formed
+    botMoveThree :: Game -> (Int, Int) -> (Int, Int)
+    botMoveThree game (x, y)    | isRightB game (x,y) /= (-1,-1) && twoInRowCheckerBotMove game (isRightB game (x,y)) /= (-1,-1) = isRightB game (x,y)
                                 | isLeftB game (x,y) /= (-1,-1) && twoInRowCheckerBotMove game (isLeftB game (x,y)) /= (-1,-1) = isLeftB game (x,y)
                                 | isDownB game (x,y) /= (-1,-1) && twoInRowCheckerBotMove game (isDownB game (x,y)) /= (-1,-1) = isDownB game (x,y)
                                 | isUpB game (x,y) /= (-1,-1) && twoInRowCheckerBotMove game (isUpB game (x,y)) /= (-1,-1) = isUpB game (x,y)
@@ -725,6 +776,7 @@ module Logic1 where
 
     -- | 'simpleTraverseBotMove'
     -- Find the first position on board for bot for which it can move
+    simpleTraverseBotMove :: Game -> (Int, Int) -> (Int, Int)
     simpleTraverseBotMove game (x,y) | ((board ! (x,y) /= Full Player1) || (board ! (x,y) == Full Player1 && checkNeighbour game (x,y) == 0)) && x <= 5 = simpleTraverseBotMove game (x + 1, y)
                                      | ((board ! (x,y) /= Full Player1) || (board ! (x,y) == Full Player1 && checkNeighbour game (x,y) == 0)) && x == 6 && y <= 5 = simpleTraverseBotMove game (0, y + 1)
                                      | ((board ! (x,y) /= Full Player1) || (board ! (x,y) == Full Player1 && checkNeighbour game (x,y) == 0)) && x == 6 && y == 6 = (-1,-1)
@@ -733,7 +785,8 @@ module Logic1 where
                                                n1  = player1Stone game
 
     -- | 'posneighSimpTrv'
-    -- Movement to its neighbouur
+    -- Movement to its neighbour
+    posneighSimpTrv :: Game -> (Int, Int) -> (Int, Int)
     posneighSimpTrv game (x,y)  | isUpB game (x,y) /= (-1,-1) = isUpB game (x,y)
                                 | isRightB game (x,y) /= (-1,-1) = isRightB game (x,y)
                                 | isDownB game (x,y) /= (-1,-1) = isDownB game (x,y)
@@ -743,7 +796,8 @@ module Logic1 where
 
     -- | 'botMove'
     -- Main function to handle bot movement
-    botMove game (x,y)      | board ! (x,y) == Full Player1 && botMoveThree game (x,y) /= (-1,-1) = game { gameBoard = board // [((x,y),Full Dot), ((botMoveThree game (x,y)), Full Player1)]}
+    botMove :: Game -> (Int, Int) -> Game
+    botMove game (x, y)     | board ! (x,y) == Full Player1 && botMoveThree game (x,y) /= (-1,-1) = game { gameBoard = board // [((x,y),Full Dot), ((botMoveThree game (x,y)), Full Player1)]}
                             | x <= 5 = botMove game (x + 1, y)
                             | x==6 && y <= 5 = botMove game (0, y + 1)
                             | otherwise = game { gameBoard =  board // [((simpleTraverseBotMove game (0,0)), Full Dot), ((posneighSimpTrv game (simpleTraverseBotMove game (0,0))), Full Player1)]}
@@ -757,6 +811,7 @@ module Logic1 where
 
     -- | 'botMoveThreeFly'
     -- Fly to the corrdinate were morris can be formed or blocked
+    botMoveThreeFly :: Game -> (Int, Int) -> (Int, Int)
     botMoveThreeFly game (x, y)   | twoInRowCheckerBotMove game ((x, y)) /= (-1,-1) = (x, y)
                                   | twoInRowCheckerBotMove game ((x, y)) /= (-1,-1) = (x, y)
                                   | twoInRowCheckerBotMove game ((x, y)) /= (-1,-1) = (x, y)
@@ -767,6 +822,7 @@ module Logic1 where
 
     -- | 'botFlyMove'
     -- Checking bot fly movement
+    botFlyMove :: Game -> (Int, Int) -> Game
     botFlyMove game (x, y)      | board ! (x, y) == Full Player1 && botMoveThreeFly game (0, 0) /= (-1, -1) =
                                       game { gameBoard = board // [ ((x, y), Full Dot), ((botMoveThreeFly game (0, 0)), Full Player1) ]}
                                 | x <= 5 = botFlyMove game (x + 1, y)
@@ -777,6 +833,7 @@ module Logic1 where
 
     -- | 'traverseBoardBot'
     -- Traverse board for simple board movement
+    traverseBoardBot :: Game -> (Int, Int) -> Game
     traverseBoardBot game (x, y)    | board ! (x,y) /= Full Dot && x <= 5 = traverseBoardBot game (x + 1, y)
                                     | board ! (x,y) /= Full Dot && x == 6 && y <= 5 = traverseBoardBot game (0, y + 1)
                                     | board ! (x,y) /= Full Dot && x == 6 && y == 6 = game
@@ -784,6 +841,7 @@ module Logic1 where
                                         where board = gameBoard game
                                               n1  = player1Stone game
 
+    threeTakerH :: Game -> Int -> (Int, Int)
     threeTakerH game  n      |  n < 8 && (validityH!!n == 0 && board ! ((list!!n)!!0, (list!!n)!!1) == Full Player2)  = ((list!!n)!!0, (list!!n)!!1)
                              |  n == 8 = (-1,-1)
                              | otherwise = threeTakerH game (n + 1)
@@ -791,6 +849,7 @@ module Logic1 where
                                       list = gameList game
                                       validityH = checkListH game
 
+    threeTakerV :: Game -> Int -> (Int, Int)
     threeTakerV game n       |  n < 8 && (validityV!!n == 0 && board ! ((list!!n)!!1, (list!!n)!!0) == Full Player2) = ((list!!n)!!1, (list!!n)!!0)
                              |  n == 8 = (-1,-1)
                              |  otherwise = threeTakerV game (n + 1)
@@ -798,13 +857,14 @@ module Logic1 where
                                           list = gameList game
                                           validityV = checkListV game
 
-
+    traverseBoardBotTake :: Game -> (Int, Int) -> (Int, Int)
     traverseBoardBotTake game (x, y)    | board ! (x,y) /= Full Player2 && x <= 5 = traverseBoardBotTake game (x + 1, y)
                                         | board ! (x,y) /= Full Player2 && x == 6 && y <= 5 = traverseBoardBotTake game (0, y + 1)
                                         | board ! (x,y) /= Full Player2 && x == 6 && y == 6 = (-1,-1)
                                         | otherwise = (x,y)
                                             where board = gameBoard game
 
+    traverseBoardBotMove :: Game -> (Int, Int) -> (Int, Int)
     traverseBoardBotMove game (x, y)    | board ! (x,y) /= Full Player1 && x <= 5 = traverseBoardBotTake game (x + 1, y)
                                         | board ! (x,y) /= Full Player1 && x == 6 && y <= 5 = traverseBoardBotTake game (0, y + 1)
                                         | board ! (x,y) /= Full Player1 && x == 6 && y == 6 = (-1,-1)
@@ -813,6 +873,7 @@ module Logic1 where
 
     -- | 'twoInRowChecker'
     -- This function checks are there any two same placed stone in a row
+    twoInRowChecker :: Game -> (Int, Int) -> Game
     twoInRowChecker game (x,y) | board ! (x,y) == Full Dot && (elem (x,y) twoHCoord) && (isRightTwoB game (x,y) /= (-1,-1) || isLeftTwoB game (x,y) /= (-1,-1)) = game { gameBoard = board // [((x,y),Full Player1)], player1Stone = n1 + 1, botCoords = (x,y)}
                                | board ! (x,y) == Full Dot && (elem (x,y) twoVCoord) && (isUpTwoB game (x,y) /= (-1,-1) || isDownTwoB game (x,y) /= (-1,-1)) = game { gameBoard = board // [((x,y),Full Player1)], player1Stone = n1 + 1, botCoords = (x,y)}
                                | board ! (x,y) == Full Dot && (elem (x,y) oneHCoord) && (isHOneB game (x,y) /= (-1,-1)) = game { gameBoard = board // [((x,y),Full Player1)], player1Stone = n1 + 1, botCoords = (x,y)}
@@ -827,6 +888,7 @@ module Logic1 where
 
     -- | 'twoInRowCheckerBotMove'
     -- To take action accordin to two stones in a row
+    twoInRowCheckerBotMove :: Game -> (Int, Int) -> (Int, Int)
     twoInRowCheckerBotMove game (x,y) | board ! (x,y) == Full Dot && (elem (x,y) twoHCoord) && (isRightTwoB game (x,y) /= (-1,-1) || isLeftTwoB game (x,y) /= (-1,-1)) = (x,y)
                                       | board ! (x,y) == Full Dot && (elem (x,y) twoVCoord) && (isUpTwoB game (x,y) /= (-1,-1) || isDownTwoB game (x,y) /= (-1,-1)) = (x,y)
                                       | board ! (x,y) == Full Dot && (elem (x,y) oneHCoord) && (isHOneB game (x,y) /= (-1,-1)) = (x,y)
@@ -839,6 +901,7 @@ module Logic1 where
 
     -- | 'botMoveOnPlayer'
     -- The function which tries to block the player when no morris can be formed or blocked
+    botMoveOnPlayer :: Game -> Game
     botMoveOnPlayer game | isRightB game cellCoord /= (-1,-1) = game { gameBoard = board // [(isRightB game cellCoord,Full Player1)], player1Stone = n1 + 1, botCoords = isRightB game cellCoord}
                          | isLeftB game cellCoord /= (-1,-1) = game { gameBoard = board // [(isLeftB game cellCoord,Full Player1)], player1Stone = n1 + 1, botCoords = isLeftB game cellCoord}
                          | isUpB game cellCoord /= (-1,-1) = game { gameBoard = board // [(isUpB game cellCoord,Full Player1)], player1Stone = n1 + 1, botCoords = isUpB game cellCoord}

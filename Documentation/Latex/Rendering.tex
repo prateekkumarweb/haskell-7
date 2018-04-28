@@ -1,0 +1,170 @@
+\haddockmoduleheading{Rendering}
+\label{module:Rendering}
+\haddockbeginheader
+{\haddockverb\begin{verbatim}
+module Rendering (
+    player1Color,  player2Color,  gridLightPlayer1,  gridLightPlayer2, 
+    blackcolor,  whitecolor,  tieColor,  boardGrid,  menuBoardLine, 
+    rectangleMenuBlack,  tileRenderMulti,  tileRenderSingle,  boardMenuPicture, 
+    boardAsRunningPicture,  snapPictureToCell,  snapPictureToMenuCell,  aCell, 
+    bCell,  dotCell,  cellsOfBoard,  menuCellsBoard,  tileRenderMultiCell, 
+    tileRenderSingleCell,  aCellsOfBoard,  bCellsOfBoard,  dotCellsOfBoard, 
+    gameAsPicture
+  ) where\end{verbatim}}
+\haddockendheader
+
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+player1Color\ ::\ Color
+\end{tabular}]\haddockbegindoc
+Intial colors for the different graphics\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+player2Color\ ::\ Color
+]
+\item[
+gridLightPlayer1\ ::\ Color
+]
+\item[
+gridLightPlayer2\ ::\ Color
+]
+\item[
+blackcolor\ ::\ Color
+]
+\item[
+whitecolor\ ::\ Color
+]
+\item[
+tieColor\ ::\ Color
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+boardGrid\ ::\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{boardGrid} defines the lines on the board\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+menuBoardLine\ ::\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{menuBoardLine} defines the lines on the menu board\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+rectangleMenuBlack\ ::\ Picture
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+tileRenderMulti\ ::\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{tileRenderMulti} returns the Picture from the string for Multi cell part\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+tileRenderSingle\ ::\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{tileRenderSingle} returns the Picture from the string for Single cell part\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+boardMenuPicture\ ::\ Game\ ->\ MenuBoard\ ->\ Picture
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+boardAsRunningPicture\ ::\ Game\ ->\ Board\ ->\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{boardAsRunningPicture} renders the picture depending on the board provided\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+snapPictureToCell\ ::\ Picture\ ->\ (Int,\ Int)\ ->\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{snapPictureToCell} places the picture back to the cell\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+snapPictureToMenuCell\ ::\ Picture\ ->\ (Float,\ Float)\ ->\ Picture
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+aCell\ ::\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{aCell} returns a solid circle picture with a defined radius of Player 1\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+bCell\ ::\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{bCell} returns a solid circle picture with a defined radius of Player 2\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+dotCell\ ::\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{dotCell} returns a solid circle picture with a smaller defined radius for no players\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+cellsOfBoard\ ::\ Board\ ->\ Cell\ ->\ Picture\ ->\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{cellsOfBoard} maps the  picture to the cells according to the cell type\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+menuCellsBoard\ ::\ MenuBoard\ ->\ Choice\ ->\ Picture\ ->\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{menuCellsBoard} is in accordance to the \haddockid{cellsOfBoard} function\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[
+tileRenderMultiCell\ ::\ MenuBoard\ ->\ Picture
+]
+\item[
+tileRenderSingleCell\ ::\ MenuBoard\ ->\ Picture
+]
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+aCellsOfBoard\ ::\ Board\ ->\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{aCellsOfBoard} returns the cells where the cells are of \haddocktt{a} type (Full Player1)\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+bCellsOfBoard\ ::\ Board\ ->\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{bCellsOfBoard} returns the cells where the cells are of \haddocktt{b} type (Full Player2)\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+dotCellsOfBoard\ ::\ Board\ ->\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{dotCellsOfBoard} returns the cells where the cells are of \haddocktt{dot} type (Full Dot)\par
+
+\end{haddockdesc}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}
+gameAsPicture\ ::\ Game\ ->\ Picture
+\end{tabular}]\haddockbegindoc
+\haddockid{gameAsPicture} renders the board or the menu screen depending on the Game state\par
+
+\end{haddockdesc}
