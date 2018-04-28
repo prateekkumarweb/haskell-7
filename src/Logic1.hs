@@ -230,7 +230,8 @@ module Logic1 where
             --   $ setCoordsBack -- this sets the moveCoords back to (-1, -1)
               $ game { gameBoard = board // [(cellCoord, Full player), (mCoords, Full Dot)], playerMovedCoords = cellCoord }
         -- Fly logic ends
-        | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game) < 8 && board ! cellCoord /= Full player = switchPlayer1 $ listUnblockerV $ listUnblockerH $ removerV cellCoord  $ removerH cellCoord game
+        | isCoordCorrect cellCoord && board ! cellCoord /= Full Dot && (takeOther game) < 8 && board ! cellCoord /= Full player && player == Player2 = switchPlayer1 $ listUnblockerV $ listUnblockerH $ removerV cellCoord  $ removerH cellCoord game
+        |  (takeOther game) < 8 &&  player == Player1 = switchPlayer1 $ listUnblockerV $ listUnblockerH $ removerVB $ removerHB game
         | otherwise = game
             where board = gameBoard game
                   player = gamePlayer game
@@ -586,6 +587,29 @@ module Logic1 where
                                               player = gamePlayer game
                                               stone1 = removeStone1 game
                                               stone2 = removeStone2 game
+
+    removerHB game          | (takeOtherH game 0) < 8 && threeTakerH game 0 /= (-1,-1)  = game { gameBoard = board // [(threeTakerH game 0, Full Dot)], removeStone2 = stone2 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}
+                            | (takeOtherH game 0) < 8  = game { gameBoard = board // [(traverseBoardBotTake game (0,0), Full Dot)], removeStone2 = stone2 - 1,   checkListH = (replaceNth 0 listH $ takeOtherH game 0)}  
+                            | otherwise = game
+                                        where board = gameBoard game
+                                              listH = checkListH game
+                                              player = gamePlayer game
+                                              stone1 = removeStone1 game
+                                              stone2 = removeStone2 game
+    
+    
+    
+    removerVB game          | (takeOtherV game 0) < 8 && threeTakerV game 0 /= (-1,-1)  = game { gameBoard = board // [(threeTakerV game 0, Full Dot)], removeStone2 = stone2 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
+                            | (takeOtherV game 0) < 8  = game { gameBoard = board // [(traverseBoardBotTake game (0,0), Full Dot)], removeStone2 = stone2 - 1,  checkListV = (replaceNth 0 listV $ takeOtherV game 0)}
+                            | otherwise = game
+                                        where board = gameBoard game
+                                              listV = checkListV game
+                                              player = gamePlayer game
+                                              stone1 = removeStone1 game
+                                              stone2 = removeStone2 game
+
+
+
     
     
     playerSwitcherConfirm game | (takeOther game)  < 8 = game { checker = 0}
@@ -601,7 +625,27 @@ module Logic1 where
                                     | otherwise = game { gameBoard = board // [((x,y),Full Player1)], player1Stone = n1 + 1, botCoords = (x,y)}
                                         where board = gameBoard game
                                               n1  = player1Stone game
+    
+    threeTakerH game  n      |  n < 8 && (validityH!!n == 0 && board ! ((list!!n)!!0, (list!!n)!!1) == Full Player2)  = ((list!!n)!!0, (list!!n)!!1)
+                             |  n == 8 = (-1,-1)
+                             | otherwise = threeTakerH game (n + 1)
+                                where board = gameBoard game
+                                      list = gameList game 
+                                      validityH = checkListH game
 
+    threeTakerV game n       |  n < 8 && (validityV!!n == 0 && board ! ((list!!n)!!1, (list!!n)!!0) == Full Player2) = ((list!!n)!!1, (list!!n)!!0)
+                             |  n == 8 = (-1,-1)
+                             |  otherwise = threeTakerV game (n + 1)
+                                    where board = gameBoard game
+                                          list = gameList game 
+                                          validityV = checkListV game
+
+
+    traverseBoardBotTake game (x, y)    | board ! (x,y) /= Full Player2 && x <= 5 = traverseBoardBotTake game (x + 1, y)
+                                        | board ! (x,y) /= Full Player2 && x == 6 && y <= 5 = traverseBoardBotTake game (0, y + 1)
+                                        | board ! (x,y) /= Full Player2 && x == 6 && y == 6 = (-1,-1)
+                                        | otherwise = (x,y)
+                                            where board = gameBoard game
     -- traverseBoardBotTwo game (x, y)    | board ! (x,y) /= Full Dot && x <= 5 = traverseBoardBotTwo game (x + 1, y)
     --                                    | board ! (x,y) /= Full Dot && x == 6 && y <= 5 = traverseBoardBotTwo game (0, y + 1)
     --                                    | board ! (x,y) /= Full Dot && x == 6 && y == 6 = game
@@ -614,9 +658,9 @@ module Logic1 where
                                | board ! (x,y) == Full Dot && (elem (x,y) twoVCoord) && (isUpTwoB game (x,y) /= (-1,-1) || isDownTwoB game (x,y) /= (-1,-1)) = game { gameBoard = board // [((x,y),Full Player1)], player1Stone = n1 + 1, botCoords = (x,y)}
                                | board ! (x,y) == Full Dot && (elem (x,y) oneHCoord) && (isHOneB game (x,y) /= (-1,-1)) = game { gameBoard = board // [((x,y),Full Player1)], player1Stone = n1 + 1, botCoords = (x,y)}
                                | board ! (x,y) == Full Dot && (elem (x,y) oneVCoord) && (isVOneB game (x,y) /= (-1,-1)) = game { gameBoard = board // [((x,y),Full Player1)], player1Stone = n1 + 1, botCoords = (x,y)}
-                               | board ! (x,y) /= Full Dot && x <= 5 = twoInRowChecker game (x + 1, y)
-                               | board ! (x,y) /= Full Dot && x == 6 && y <= 5 = twoInRowChecker game (0, y + 1)
-                               | board ! (x,y) /= Full Dot && x == 6 && y == 6 = botMoveOnPlayer game
+                               | x <= 5 = twoInRowChecker game (x + 1, y)
+                               | y <= 5 = twoInRowChecker game (0, y + 1)
+                               | y == 6 = botMoveOnPlayer game
                                | otherwise = botMoveOnPlayer game
                                     where board = gameBoard game
                                           cellCoord = playerMovedCoords game 
