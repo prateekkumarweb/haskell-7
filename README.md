@@ -28,8 +28,8 @@ Cabal is a system for building and packaging Haskell libraries and programs. It 
 Gloss is a graphics library used for drawing simple vector based graphics. It uses OpenGL under the hood.
 
 ## Screenshots of the game
-![Screenshot](https://github.com/IITH-SBJoshi/haskell-7/blob/CS16BTECH11032/Images/MenuScreen.png)
-![Screenshot](https://github.com/IITH-SBJoshi/haskell-7/blob/CS16BTECH11032/Images/GameScreen.png)
+![Screenshot](https://github.com/IITH-SBJoshi/haskell-7/blob/master/Images/MenuScreen.png)
+![Screenshot](https://github.com/IITH-SBJoshi/haskell-7/blob/master/Images/GameScreen.png)
 
 ## How to run
 **Note :** Instead of installing gloss globally, we’re going to create a sandbox. A sandbox is a directory in which cabal will (for the most part) ignore the global packages, and will instead install packages directly to that directory.
