@@ -9,3 +9,5 @@ cabal.sandbox.config
 dist
 .DS_Store
 .cabal-sandbox
+Html Documentation
+Latex Documentation
