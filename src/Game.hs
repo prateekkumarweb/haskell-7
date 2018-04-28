@@ -79,8 +79,7 @@ initialGame = Game { gameBoard = (array indexRange $ zip (range indexRange) (cyc
                                                                                                   ((6, 0), Full Dot),
                                                                                                   ((6, 3), Full Dot),
                                                                                                   ((6, 6), Full Dot) ]
-                     , menuBoard = (array indexRange1 $ zip (range indexRange1) (cycle [Multi])) // [ ((0, 0), Multi),
-                                                                                                      ((0, 1), Single) ]
+                     , menuBoard = (array indexRange1 $ zip (range indexRange1) (cycle [Multi])) // [ ((0, 1), Single) ]
                      , gamePlayer = Player2
                      , gameState = Menu
                      , player1Stone = 0

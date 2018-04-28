@@ -12,6 +12,8 @@ player1Color = makeColorI 255 50 50 255
 player2Color = makeColorI 50 100 255 255
 gridLightPlayer1 = makeColorI 255 91 91 255
 gridLightPlayer2 = makeColorI 91 131 255 255
+blackcolor = makeColorI 0 0 0 255
+whitecolor = makeColorI 255 255 255 255
 tieColor = greyN 0.5
 
 boardGrid :: Picture
@@ -33,17 +35,26 @@ boardGrid =
                 line [(322.0, 46.0),(322.0, 230.0)],
                 line [(322.0, 414.0),(322.0,  598.0)]]
 
+menuBoardLine :: Picture
+menuBoardLine =
+              pictures [ line [(322.0, 644.0), (322.0, 0.0)] ]
+
+rectangleMenuBlack =
+              pictures [ translate x y $ rectangleSolid 644.0 644.0 ]
+                  where x = 0.0
+                        y = fromIntegral screenHeight * 0.5
+
 tileRenderMulti :: Picture
-tileRenderMulti =
-    pictures [ Text "Multi Player" ]
+tileRenderMulti = Text "Multi Player"
 
 tileRenderSingle :: Picture
-tileRenderSingle =
-    pictures [ Text "Single Player" ]
+tileRenderSingle =  Text "Single Player"
 
 boardMenuPicture game board =
-    pictures [ color player1Color $ tileRenderMultiCell board
-              , color player2Color $ tileRenderSingleCell board ]
+          pictures [  color blackcolor $ menuBoardLine
+                      , color blackcolor $ rectangleMenuBlack
+                      , color whitecolor $ tileRenderMultiCell board
+                      , color blackcolor $ tileRenderSingleCell board ]
 
 boardAsRunningPicture game board
     | player == Player1 =
@@ -63,6 +74,10 @@ boardAsRunningPicture game board
 snapPictureToCell picture (row, column) = translate x y picture
     where x = fromIntegral column * cellWidth + cellWidth * 0.5
           y = fromIntegral row * cellHeight + cellHeight * 0.5
+
+snapPictureToMenuCell picture (row, column) = translate x y picture
+    where x = fromIntegral screenWidth * (column * 0.5 + 0.09)
+          y = fromIntegral screenHeight * (row + 0.5)
 
 aCell :: Picture
 aCell = circleSolid radius
@@ -85,13 +100,13 @@ cellsOfBoard board cell cellPicture =
 
 menuCellsBoard board choice menuPicture =
     pictures
-    $ map (snapPictureToCell menuPicture . fst)
+    $ map (snapPictureToMenuCell menuPicture . fst)
     $ filter (\(_, e) -> e == choice)
-    $ assocs board
+    $ [((0, 0), Multi), ((0, 1), Single)]
 
-tileRenderMultiCell board = menuCellsBoard board Multi tileRenderMulti
+tileRenderMultiCell board = menuCellsBoard board Multi $ scale 0.25 0.25 tileRenderMulti
 
-tileRenderSingleCell board = menuCellsBoard board Single tileRenderSingle
+tileRenderSingleCell board = menuCellsBoard board Single $ scale 0.25 0.25 tileRenderSingle
 
 aCellsOfBoard :: Board -> Picture
 aCellsOfBoard board = cellsOfBoard board (Full Player1) aCell
